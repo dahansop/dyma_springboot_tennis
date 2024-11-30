@@ -1,0 +1,24 @@
+package com.dyma.tennis.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dyma.tennis.dto.ApplicationStatus;
+import com.dyma.tennis.dto.HealthCheck;
+import com.dyma.tennis.repository.HealthCheckRepository;
+
+@Service
+public class HealthCheckService {
+
+  @Autowired
+  private HealthCheckRepository healthCheckRepository;
+  
+	public HealthCheck healthCheck() {
+		Long nbAppConnection = healthCheckRepository.countApplicationConection();
+		if (nbAppConnection > 0) {
+		  return new HealthCheck(ApplicationStatus.OK, "Welcome to Tennis Game!");
+		} else {
+		  return new HealthCheck(ApplicationStatus.KO, "Error : datasource not connected !");
+		}
+	}
+}
