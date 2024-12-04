@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.dyma.tennis.repository.HealthCheckRepository;
 import com.dyma.tennis.rest.HealthCheckController;
+import com.dyma.tennis.rest.PlayerController;
 import com.dyma.tennis.service.HealthCheckService;
 
 @SpringBootTest
@@ -15,6 +16,8 @@ class TennisApplicationTests {
   @Autowired
   private HealthCheckController healthCheckController;
   @Autowired
+  private PlayerController playerController;
+  @Autowired
   private HealthCheckService healthCheckService;
   @Autowired
   private HealthCheckRepository healthCheckRepository;
@@ -22,6 +25,7 @@ class TennisApplicationTests {
 	@Test
 	void contextLoads() {
 	  Assertions.assertThat(healthCheckController).isNotNull();
+	  Assertions.assertThat(playerController).isNotNull();
 	  Assertions.assertThat(healthCheckService).isNotNull();
 	  Assertions.assertThat(healthCheckRepository).isNotNull();
 	}

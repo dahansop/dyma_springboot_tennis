@@ -2,26 +2,27 @@ package com.dyma.tennis.rest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.dyma.tennis.dto.Error;
+import com.dyma.tennis.exceptions.PlayerNotFoundException;
+
 /**
- * Gestion des erreurs du player controller
+ * Gestion des erreurs du REST controller
  */
 @RestControllerAdvice
 public class PlayerControllerErrorHandler {
 
-  @ExceptionHandler(NoSuchElementException.class)
+  @ExceptionHandler(PlayerNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public void handleNoElementException() {
-    System.out.println("je suis dans le handler");
+  public Error handlePlayerNotFoundException(PlayerNotFoundException ex) {
+    return new Error(ex.getMessage());
   }
   
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -37,8 +38,8 @@ public class PlayerControllerErrorHandler {
   }
   
 //  @ExceptionHandler(HttpMessageNotReadableException.class)
-//  @ResponseStatus(HttpStatus.NOT_FOUND)
-//  public String handleHttpMessageNotReadableException() {
-//    return "Le message ne peut pas etre lu - JSON parsing erreur";
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  public Error handleHttpMessageNotReadableException() {
+//    return new Error("Le message ne peut pas etre lu - JSON parsing erreur");
 //  }
 }

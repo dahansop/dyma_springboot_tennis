@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
 
+/**
+ * Repository permettant de vérifier l'état de santé de la BDD
+ */
 @Repository
 public class HealthCheckRepository {
 

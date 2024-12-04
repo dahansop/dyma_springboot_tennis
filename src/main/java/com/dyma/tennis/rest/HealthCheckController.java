@@ -14,6 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/**
+ * API REST pour l'état de santé de l'applicaton
+ */
 @Tag(name = "HealthCheck API")
 @RestController
 public class HealthCheckController {

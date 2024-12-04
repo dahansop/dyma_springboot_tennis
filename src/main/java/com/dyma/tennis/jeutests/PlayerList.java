@@ -11,7 +11,7 @@ import com.dyma.tennis.dto.Rank;
 /**
  * Classe permettant de simuler un jeu de données pour les joueurs afin de tester notre API REST
  */
-public final class PlayerList {
+public class PlayerList {
 
   public static Player RAFAEL_NADAL = new Player(
       "Rafael", 
@@ -37,5 +37,5 @@ public final class PlayerList {
       LocalDate.of(1987, Month.MAY, 15), 
       new Rank(4, 2000));
 
-  public static final List<Player> ALL = Arrays.asList(RAFAEL_NADAL, NOVAK_DJOKOVIC, ROGER_FEDERER, ANDY_MURRAY);
+  public static List<Player> ALL = Arrays.asList(ANDY_MURRAY, NOVAK_DJOKOVIC, RAFAEL_NADAL, ROGER_FEDERER);
 }

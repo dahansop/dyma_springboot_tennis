@@ -7,6 +7,9 @@ import com.dyma.tennis.dto.ApplicationStatus;
 import com.dyma.tennis.dto.HealthCheck;
 import com.dyma.tennis.repository.HealthCheckRepository;
 
+/**
+ * Service pour la gestion de l'état de santé de l'application
+ */
 @Service
 public class HealthCheckService {
 
