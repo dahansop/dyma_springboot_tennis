@@ -37,11 +37,6 @@ public class PlayerService {
         .map(playerEntity -> convertEntityToDto(playerEntity))
         .sorted(Comparator.comparing(player -> player.rank().position()))
         .collect(Collectors.toList());
-    
-    
-//    return PlayerList.ALL.stream()
-//        .sorted(Comparator.comparing(player -> player.rank().position()))
-//        .collect(Collectors.toList());
   }
   
   /**
@@ -57,11 +52,6 @@ public class PlayerService {
     }
     
     return convertEntityToDto(playerEntity.get());
-    
-//    return PlayerList.ALL.stream()
-//        .filter(player -> player.lastName().equals(lastName))
-//        .findFirst()
-//        .orElseThrow(() -> new PlayerNotFoundException(lastName));
   }
 
   /**
@@ -83,13 +73,9 @@ public class PlayerService {
         TEMPORARY_RANK);
     playerRepository.save(playerEntity);
     
-    RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
-    List<PlayerEntity> newRankingList = rankingCalculator.getNewPlayersRanking();
-    playerRepository.saveAll(newRankingList);
+    updateRankingPlayers();
     
     return getByLastName(playerToSave.lastName());
-    
-    //return getNewRankingplayer(PlayerList.ALL, playerToSave);
   }
   
   /**
@@ -109,21 +95,9 @@ public class PlayerService {
     playerEntity.setPoints(playerToSave.points());
     playerEntity = playerRepository.save(playerEntity);
     
-    RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
-    List<PlayerEntity> newRankingList = rankingCalculator.getNewPlayersRanking();
-    playerRepository.saveAll(newRankingList);
+    updateRankingPlayers();
     
     return getByLastName(playerToSave.lastName());
-    
-    //getByLastName(playerToSave.lastName()); // remonte une exception si le joueur existe déjà
-    
-    // on supprime le joueur du classement (les record ne sont pas modifiables)
-//    List<Player> playersWithoutPlayerToUpdate = PlayerList.ALL.stream()
-//        .filter(player -> !player.lastName().equals(playerToSave.lastName()))
-//        .toList();
-    
-    // mise à jour du classement général
-   // return getNewRankingplayer(playersWithoutPlayerToUpdate, playerToSave);
   }
   
   /**
@@ -138,20 +112,7 @@ public class PlayerService {
 
     playerRepository.delete(player.get());
     
-    RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
-    List<PlayerEntity> newRankingList = rankingCalculator.getNewPlayersRanking();
-    playerRepository.saveAll(newRankingList);
-    
-   // Player playerToDelete = getByLastName(lastName); // remonte une exception si le joueur existe déjà
-    
-    // on supprime le joueur du classement (les record ne sont pas modifiables)
-//    List<Player> playersWithoutPlayerToDelete = PlayerList.ALL.stream()
-//        .filter(player -> !player.lastName().equals(playerToDelete.lastName()))
-//        .toList();
-    
-    // mise à jour du classement général
-//    RankingCalculatorList rankingCalculator = new RankingCalculatorList(playersWithoutPlayerToDelete, null);
-//    rankingCalculator.calculateNewPlayersRanking();
+    updateRankingPlayers();
   }
   
   /**
@@ -159,15 +120,11 @@ public class PlayerService {
    * @param playersList list des joueur (sans celui à mettre à jour)
    * @param playertoSave joueur à mettre à jour
    */
-//  private Player getNewRankingplayer(List<Player> playersList, PlayerToSave playerToSave) {
-//    RankingCalculatorList rankingCalculator = new RankingCalculatorList(playersList, playerToSave);
-//    rankingCalculator.calculateNewPlayersRanking();
-//    
-//    return PlayerList.ALL.stream()
-//        .filter(player -> player.lastName().equals(playerToSave.lastName()))
-//        .findFirst()
-//        .get();
-//  }
+  private void updateRankingPlayers() {
+    RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
+    List<PlayerEntity> newRankingList = rankingCalculator.getNewPlayersRanking();
+    playerRepository.saveAll(newRankingList);
+  }
   
   /**
    * Converti un PlayerEntity en Player
