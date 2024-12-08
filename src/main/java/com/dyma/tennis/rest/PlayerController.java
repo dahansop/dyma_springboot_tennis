@@ -65,7 +65,7 @@ public class PlayerController {
       @ApiResponse(responseCode = "200", description = "le joueur créé",
           content = {@Content(mediaType = "application/json",
           schema = @Schema(implementation = Player.class)) }),
-      @ApiResponse(responseCode = "400", description = "Information manquante ou illisible",
+      @ApiResponse(responseCode = "400", description = "Le joueur existe déjà",
           content = {@Content(mediaType = "application/json", 
           schema = @Schema(implementation = Error.class))}) })
   @PostMapping

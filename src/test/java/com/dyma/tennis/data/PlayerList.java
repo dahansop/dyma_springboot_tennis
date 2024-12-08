@@ -1,4 +1,4 @@
-package com.dyma.tennis.jeutests;
+package com.dyma.tennis.data;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -37,5 +37,5 @@ public class PlayerList {
       LocalDate.of(1987, Month.MAY, 15), 
       new Rank(4, 2000));
 
-  public static List<Player> ALL = Arrays.asList(ANDY_MURRAY, NOVAK_DJOKOVIC, RAFAEL_NADAL, ROGER_FEDERER);
+  public static List<Player> ALL = Arrays.asList(RAFAEL_NADAL, NOVAK_DJOKOVIC, ROGER_FEDERER, ANDY_MURRAY);
 }
