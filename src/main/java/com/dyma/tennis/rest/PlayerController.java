@@ -41,7 +41,9 @@ public class PlayerController {
   @ApiResponses(value = { 
       @ApiResponse(responseCode = "200", description = "la liste des joueurs", 
          content = {@Content(mediaType = "application/json",
-         array = @ArraySchema(schema = @Schema(implementation = Player.class))) }) })
+         array = @ArraySchema(schema = @Schema(implementation = Player.class))) }),
+      @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
+  })
   @GetMapping
   public List<Player> list() {
     return playerService.getAll();
@@ -54,7 +56,9 @@ public class PlayerController {
          schema = @Schema(implementation = Player.class))}),
       @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
          content = {@Content(mediaType = "application/json", 
-         schema = @Schema(implementation = Error.class))}) })
+         schema = @Schema(implementation = Error.class))}),
+      @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
+  })
   @GetMapping("{lastName}")
   public Player getByLastName(@PathVariable("lastName") String lastName) {
     return playerService.getByLastName(lastName);
@@ -67,7 +71,9 @@ public class PlayerController {
           schema = @Schema(implementation = Player.class)) }),
       @ApiResponse(responseCode = "400", description = "Le joueur existe déjà",
           content = {@Content(mediaType = "application/json", 
-          schema = @Schema(implementation = Error.class))}) })
+          schema = @Schema(implementation = Error.class))}),
+      @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
+  })
   @PostMapping
   public Player createPlayer(@RequestBody @Valid PlayerToSave playerToSave) {
     return playerService.create(playerToSave);
@@ -83,7 +89,9 @@ public class PlayerController {
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "400", description = "Information manquante ou illisible",
          content = {@Content(mediaType = "application/json", 
-         schema = @Schema(implementation = Error.class))}) })
+         schema = @Schema(implementation = Error.class))}),
+      @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
+  })
   @PutMapping
   public Player updatePlayer(@RequestBody @Valid PlayerToSave playerToSave) {
     return playerService.update(playerToSave);
@@ -94,7 +102,9 @@ public class PlayerController {
       @ApiResponse(responseCode = "200", description = "le joueur a été supprimé"),
       @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
          content = {@Content(mediaType = "application/json", 
-         schema = @Schema(implementation = Error.class))}) })
+         schema = @Schema(implementation = Error.class))}),
+      @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
+  })
   @DeleteMapping("{lastName}")
   public void deletePlayerByLastName(@PathVariable("lastName") String lastName) {
     playerService.delete(lastName);
