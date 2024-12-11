@@ -1,20 +1,38 @@
 version: '3.8'
 services:
-  dyma-postgresql:
+  dyma-postgresql-dev:
     image: postgres:15
-    container_name: dyma-postgres
+    container_name: dyma-postgres-dev
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    networks:
+      - dyma-network
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-data-dev:/var/lib/postgresql/data
+      - ./init-dev.sql:/docker-entrypoint-initdb.d/init.sql
+
+  dyma-postgresql-prod:
+    image: postgres:15
+    container_name: dyma-postgres-prod
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=5ML^Es%4U&DK6c
+    networks:
+      - dyma-network
+    ports:
+      - '5424:5432'
+    volumes:
+      - ./postgres-data-prod:/var/lib/postgresql/data
+      - ./init-prod.sql:/docker-entrypoint-initdb.d/init.sql
 
   dyma-pgadmin:
     image: dpage/pgadmin4
     container_name: dyma-pgadmin4
+    networks:
+      - dyma-network
     ports:
       - '8888:80'
     environment:
@@ -22,3 +40,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: pgadmin
     volumes:
       - ./pgadmin-data:/var/lib/pgadmin
+
+networks:
+  dyma-network:
+    name: dyma-network
+    driver: bridge

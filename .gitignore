@@ -30,5 +30,6 @@ replay_pid*
 .settings
 
 # docker #
-src/main/docker/postgres-data
+src/main/docker/postgres-data-dev
+src/main/docker/postgres-data-prod
 src/main/docker/pgadmin-data

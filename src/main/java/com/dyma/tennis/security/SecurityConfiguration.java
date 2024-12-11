@@ -38,6 +38,14 @@ public class SecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .csrf(csrf -> csrf.disable()) // car sinon considère le post du login comme dangereux (changement d'état possible)
+        // ajout d'une sécurité pour reExeception :fuser tout téléchargement de l'extérieur. on ajoute le data pour le simages de swagger
+        // on permet le téléchargement des styles en ligne
+        // interdiction de mettre l'application dans une frame
+        // plein ecran uniquement de l'appli ; caméra, microphone et geoloclisation interdite
+        .headers(headers -> 
+            headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self' data:; style-src 'self' 'unsafe-line';"))
+            .frameOptions(frameOptionsConfig -> frameOptionsConfig.deny())
+            .permissionsPolicyHeader(permissionsPolicyConfig -> permissionsPolicyConfig.policy("fullscreen=(self), geolocalisation=(), microphone=(), camera=()")))
         .authorizeHttpRequests(authorizations ->  
           authorizations
           //.requestMatchers(HttpMethod.POST, "/players/**").hasAuthority("ROLE_USER") fonctionne aussi car l'admin a le droit role_user
