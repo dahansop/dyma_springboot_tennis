@@ -46,7 +46,7 @@ public class PlayerController {
   })
   @GetMapping
   public List<Player> list() {
-    return playerService.getAll();
+    return playerService.getAllPlayers();
   }
 
   @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son nom")

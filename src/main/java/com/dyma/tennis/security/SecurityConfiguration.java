@@ -48,15 +48,16 @@ public class SecurityConfiguration {
             .permissionsPolicyHeader(permissionsPolicyConfig -> permissionsPolicyConfig.policy("fullscreen=(self), geolocalisation=(), microphone=(), camera=()")))
         .authorizeHttpRequests(authorizations ->  
           authorizations
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
+            .requestMatchers("/accounts/login").permitAll()
+            .requestMatchers("/healthcheck/**").permitAll()
+            .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
           //.requestMatchers(HttpMethod.POST, "/players/**").hasAuthority("ROLE_USER") fonctionne aussi car l'admin a le droit role_user
             .requestMatchers(HttpMethod.GET, "/players/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .requestMatchers(HttpMethod.POST, "/players/**").hasAuthority("ROLE_ADMIN")
             .requestMatchers(HttpMethod.PUT, "/players/**").hasAuthority("ROLE_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/players/**").hasAuthority("ROLE_ADMIN")
-            .requestMatchers("/swagger-ui/**").permitAll()
-            .requestMatchers("/v3/api-docs/**").permitAll()
-            .requestMatchers("/accounts/login").permitAll()
-            .requestMatchers("/healthcheck/**").permitAll()
             .anyRequest().authenticated()
         );
     return http.build();

@@ -63,7 +63,7 @@ public class PlayerServiceIntegrationTest {
     
     // when
     playerService.delete(playerToDelete);
-    List<Player> allPlayers = playerService.getAll();
+    List<Player> allPlayers = playerService.getAllPlayers();
     
     // Then
     Assertions.assertThat(allPlayers)

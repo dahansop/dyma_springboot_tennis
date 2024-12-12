@@ -65,3 +65,12 @@ Pour supprimer l'image
 
 docker image rm dyma-tennis-api
 
+## graylog
+
+http://localhost:9000
+
+admin/admin
+
+## Actuator
+
+http://localhost:8080/actuator

@@ -9,15 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataRetrievalFailureException;
 
 import com.dyma.tennis.data.PlayerEntityList;
 import com.dyma.tennis.dto.Player;
+import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
 import com.dyma.tennis.repository.PlayerRepository;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class PLayerServiceTest {
+public class PlayerServiceTest {
 
   @Mock
   private PlayerRepository playerRepository;
@@ -36,12 +38,24 @@ public class PLayerServiceTest {
     Mockito.when(playerRepository.findAll()).thenReturn(PlayerEntityList.ALL);
     
     // when
-    List<Player> allPlayers = playerService.getAll();
+    List<Player> allPlayers = playerService.getAllPlayers();
     
     // Then
     Assertions.assertThat(allPlayers)
       .extracting("lastName")
       .containsExactly("Nadal", "Djokovic", "Federer", "Murray");
+  }
+  
+  @Test
+  public void shouldFailReturnPlayersRanking_whenDataAccessExceptionOccurs() {
+    // Given
+    Mockito.when(playerRepository.findAll()).thenThrow(new DataRetrievalFailureException("Data access error"));
+
+    // When / Then
+    Exception exception = assertThrows(PlayerDataRetrievalException.class, () -> {
+      playerService.getAllPlayers();
+    });
+    Assertions.assertThat(exception.getMessage()).isEqualTo("Could not retrieve player data");
   }
   
   @Test

@@ -29,7 +29,7 @@ public class PlayerControllerTest {
   @Test
   public void shouldListAllPlayers() throws Exception {
     // Given
-    Mockito.when(playerService.getAll()).thenReturn(PlayerList.ALL);
+    Mockito.when(playerService.getAllPlayers()).thenReturn(PlayerList.ALL);
     
     // When / then
     mockMvc.perform(get("/players"))
