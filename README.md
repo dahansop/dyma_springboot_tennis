@@ -8,13 +8,17 @@ Pour démarrer la base de données PostgreSQL et l'outil d'aministration PGAdmin
 Se placer dans le répertoire 'src/main/docker'
 
 Exécuter la commande
-'''docker compose up -d'''
+
+```bash
+docker compose up -d
+```
 
 
 Pour utiliser PGAdmin, ouvrir l'URL suivante dans un navigateur :
-(http://localhost:8888)
-login : pgadmin@pgadmin.com
-password : pgadmin
+
+* URL : <http://localhost:8888>
+* login : pgadmin@pgadmin.com
+* password : pgadmin
 
 Enregistrer la connection à la BDD DEV
 Clic droit sur server -> Register... -> Server
@@ -39,38 +43,51 @@ Clic droit sur server -> Register... -> Server
 Pour arrêter les containers faire un ctrl+C
 
 Pour tout détruire faire :
-'''docker compose down --remove-orphans'''
 
-## Accéder à l'application
+```bash
+docker compose down --remove-orphans
+```
 
-http://localhost:8080
+## Exécuter l'application en local
+
+Exécuter le run **run TennisApplication - dev**
+
+URL : <http://localhost:8080/swagger-ui/index.html>
 
 ## Déploiement de l'application Spring Boot dans un conteneur (prod)
 
-Créer l'image "dyma-tennis-api" Docker
+Créer l'image **dyma-tennis-api** Docker
 
+```bash
 docker build -t dyma-tennis-api .
+```
 
 Créer un conteneur à partir de cette image
 
+```bash
 docker run --name dyma-tennis -p 8080:8080 --net dyma-network -e SPRING_DATASOURCE_URL="jdbc:postgresql://dyma-postgres-prod:5432/postgres" -e SPRING_DATASOURCE_USERNAME="postgres" -e SPRING_DATASOURCE_PASSWORD="5ML^Es%4U&DK6c" dyma-tennis-api
+```
 
 Pour arrêter le conteneur faire Ctrl + c
 
 Pour supprimer le conteneur
 
+```bash
 docker rm dyma-tennis
+```
 
 Pour supprimer l'image
 
+```bash
 docker image rm dyma-tennis-api
+```
 
 ## graylog
 
-http://localhost:9000
-
-admin/admin
+* URL : <http://localhost:9000>
+* login : admin
+* password : admin
 
 ## Actuator
 
-http://localhost:8080/actuator
+* URL : <http://localhost:8080/actuator>

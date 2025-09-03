@@ -1,4 +1,4 @@
-package com.dyma.tennis.dto;
+package com.dyma.tennis.model;
 
 import java.time.LocalDate;
 

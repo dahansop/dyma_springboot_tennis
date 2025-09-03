@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dyma.tennis.dto.Player;
-import com.dyma.tennis.dto.PlayerToSave;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.PlayerToSave;
 import com.dyma.tennis.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;

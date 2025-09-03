@@ -1,4 +1,4 @@
-package com.dyma.tennis.dto;
+package com.dyma.tennis.model;
 
 /**
  * Objet représentant l'état de santé de l'application

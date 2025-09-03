@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   dyma-postgresql-dev:
-    image: postgres:15
+    image: postgres:17
     container_name: dyma-postgres-dev
     environment:
       - POSTGRES_USER=postgres
@@ -12,10 +11,9 @@ services:
       - '5432:5432'
     volumes:
       - ./postgres-data-dev:/var/lib/postgresql/data
-      - ./init-dev.sql:/docker-entrypoint-initdb.d/init.sql
 
   dyma-postgresql-prod:
-    image: postgres:15
+    image: postgres:17
     container_name: dyma-postgres-prod
     environment:
       - POSTGRES_USER=postgres
@@ -26,7 +24,6 @@ services:
       - '5424:5432'
     volumes:
       - ./postgres-data-prod:/var/lib/postgresql/data
-      - ./init-prod.sql:/docker-entrypoint-initdb.d/init.sql
 
   dyma-pgadmin:
     image: dpage/pgadmin4

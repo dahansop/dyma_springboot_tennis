@@ -3,8 +3,8 @@ package com.dyma.tennis.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dyma.tennis.dto.ApplicationStatus;
-import com.dyma.tennis.dto.HealthCheck;
+import com.dyma.tennis.model.ApplicationStatus;
+import com.dyma.tennis.model.HealthCheck;
 import com.dyma.tennis.repository.HealthCheckRepository;
 
 /**

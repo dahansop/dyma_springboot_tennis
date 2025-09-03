@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.dyma.tennis.dto.Error;
 import com.dyma.tennis.exceptions.PlayerAlreadyExistException;
 import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
+import com.dyma.tennis.model.Error;
 
 /**
  * Gestion des erreurs du REST controller

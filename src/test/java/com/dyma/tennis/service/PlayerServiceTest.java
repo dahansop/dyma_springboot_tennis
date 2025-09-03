@@ -12,9 +12,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import com.dyma.tennis.data.PlayerEntityList;
-import com.dyma.tennis.dto.Player;
 import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
+import com.dyma.tennis.model.Player;
 import com.dyma.tennis.repository.PlayerRepository;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

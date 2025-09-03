@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.dyma.tennis.dto.Player;
-import com.dyma.tennis.dto.PlayerToSave;
-import com.dyma.tennis.dto.Rank;
 import com.dyma.tennis.exceptions.PlayerAlreadyExistException;
 import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.Rank;
 import com.dyma.tennis.repository.PlayerRepository;
 import com.dyma.tennis.repository.entity.PlayerEntity;
 

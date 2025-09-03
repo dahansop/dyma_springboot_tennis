@@ -5,8 +5,8 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dyma.tennis.dto.Player;
-import com.dyma.tennis.dto.Rank;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.Rank;
 
 /**
  * Classe permettant de simuler un jeu de données pour les joueurs afin de tester notre API REST

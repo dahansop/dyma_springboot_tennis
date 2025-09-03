@@ -1,29 +1,35 @@
 package com.dyma.tennis.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
-import com.dyma.tennis.dto.Player;
-import com.dyma.tennis.dto.PlayerToSave;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import com.dyma.tennis.model.Player;
+import com.dyma.tennis.model.PlayerToSave;
 
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PlayerServiceIntegrationTest {
 
   @Autowired
   private PlayerService playerService;
+  
+  @BeforeEach
+  void clearDatabase(@Autowired Flyway flyway) {
+    flyway.clean();
+    flyway.migrate();
+  }
   
   @Test
   public void shoudlCeratePlayer() {
