@@ -3,7 +3,7 @@ package com.dyma.tennis.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dyma.tennis.repository.entity.PlayerEntity;
+import com.dyma.tennis.data.PlayerEntity;
 
 public class RankingCalculator {
 

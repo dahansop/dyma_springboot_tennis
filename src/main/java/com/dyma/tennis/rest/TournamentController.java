@@ -1,6 +1,4 @@
-package com.dyma.tennis.rest;
-
-import java.util.List;
+package com.dyma.tennis.rest;import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToCreate;
-import com.dyma.tennis.model.PlayerToUpdate;
-import com.dyma.tennis.service.PlayerService;
+import com.dyma.tennis.model.Tournament;
+import com.dyma.tennis.model.TournamentToCreate;
+import com.dyma.tennis.model.TournamentToUpdate;
+import com.dyma.tennis.service.TournamentService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -28,64 +26,65 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
- * API REST des joueurs de tennis
+ * API REST des tournois de tennis
+ * 
  */
-@Tag(name = "Tennis players API")
+@Tag(name = "Tournaments API")
 @RestController
-@RequestMapping("/players")
-public class PlayerController {
+@RequestMapping("/tournaments")
+public class TournamentController {
 
   @Autowired
-  private PlayerService playerService;
+  private TournamentService tournamentService;
   
-  @Operation(summary = "Liste des joueurs", description = "Liste des joueurs")
+  @Operation(summary = "Liste des tournois", description = "Liste des tournois")
   @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "la liste des joueurs", 
+      @ApiResponse(responseCode = "200", description = "la liste des tournois", 
          content = {@Content(mediaType = "application/json",
-         array = @ArraySchema(schema = @Schema(implementation = Player.class))) }),
+         array = @ArraySchema(schema = @Schema(implementation = Tournament.class))) }),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @GetMapping
-  public List<Player> list() {
-    return playerService.getAllPlayers();
+  public List<Tournament> list() {
+    return tournamentService.getAllTournaments();
   }
-
-  @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son identifiant")
+  
+  @Operation(summary = "Recherche un tournois", description = "Recherche un tournois a partir de son identifiant")
   @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "un joueur", 
+      @ApiResponse(responseCode = "200", description = "un tournois", 
          content = {@Content(mediaType = "application/json", 
-         schema = @Schema(implementation = Player.class))}),
-      @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
+         schema = @Schema(implementation = Tournament.class))}),
+      @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
          content = {@Content(mediaType = "application/json", 
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @GetMapping("{identifier}")
-  public Player getPlayer(@PathVariable("identifier") UUID identifier) {
-    return playerService.getByIdentifier(identifier);
+  public Tournament getTournament(@PathVariable("identifier") UUID identifier) {
+    return tournamentService.getByIdentifier(identifier);
   }
-
-  @Operation(summary = "Créer un joueur", description = "Créer un joueur")
+  
+  @Operation(summary = "Créer un tournois", description = "Créer un tournois")
   @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "le joueur créé",
+      @ApiResponse(responseCode = "200", description = "le tournois créé",
           content = {@Content(mediaType = "application/json",
-          schema = @Schema(implementation = Player.class)) }),
-      @ApiResponse(responseCode = "400", description = "Le joueur existe déjà",
+          schema = @Schema(implementation = Tournament.class)) }),
+      @ApiResponse(responseCode = "400", description = "Le tournois existe déjà",
           content = {@Content(mediaType = "application/json", 
           schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @PostMapping
-  public Player createPlayer(@RequestBody @Valid PlayerToCreate playerToCreate) {
-    return playerService.create(playerToCreate);
+  public Tournament createTournament(@RequestBody @Valid TournamentToCreate tournamentToCreate) {
+    return tournamentService.create(tournamentToCreate);
   }
-
-  @Operation(summary = "Mise à jour d'un joueur", description = "Mise à jour d'un joueur")
+  
+  @Operation(summary = "Mise à jour d'un tournois", description = "Mise à jour d'un tournois")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "le joueur mis à jour", 
+      @ApiResponse(responseCode = "200", description = "le tournois mis à jour", 
          content = {@Content(mediaType = "application/json", 
-         schema = @Schema(implementation = Player.class)) }),
-      @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
+         schema = @Schema(implementation = Tournament.class)) }),
+      @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
          content = {@Content(mediaType = "application/json", 
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "400", description = "Information manquante ou illisible",
@@ -94,20 +93,20 @@ public class PlayerController {
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @PutMapping
-  public Player updatePlayer(@RequestBody @Valid PlayerToUpdate playerToUpdate) {
-    return playerService.update(playerToUpdate);
+  public Tournament updateTournament(@RequestBody @Valid TournamentToUpdate tournamentToUpdate) {
+    return tournamentService.update(tournamentToUpdate);
   }
 
-  @Operation(summary = "Suppression d'un joueur", description = "Suppression d'un joueur à partir de son nom")
+  @Operation(summary = "Suppression d'un tournois", description = "Suppression d'un tournois à partir de son nom")
   @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "le joueur a été supprimé"),
-      @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
+      @ApiResponse(responseCode = "200", description = "le tournois a été supprimé"),
+      @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
          content = {@Content(mediaType = "application/json", 
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @DeleteMapping("{identifier}")
-  public void deletePlayer(@PathVariable("identifier") UUID identifier) {
-    playerService.delete(identifier);
+  public void deleteTournament(@PathVariable("identifier") UUID identifier) {
+    tournamentService.delete(identifier);
   }
 }

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import com.dyma.tennis.repository.entity.PlayerEntity;
+import com.dyma.tennis.data.PlayerEntity;
 
 public class PlayerEntityList {
 

@@ -2,9 +2,9 @@ package com.dyma.tennis.security;
 
 import org.springframework.stereotype.Component;
 
+import com.dyma.tennis.data.RoleEntity;
+import com.dyma.tennis.data.UserEntity;
 import com.dyma.tennis.repository.UserRepository;
-import com.dyma.tennis.repository.entity.RoleEntity;
-import com.dyma.tennis.repository.entity.UserEntity;
 
 import java.util.List;
 

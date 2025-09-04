@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.dyma.tennis.data.PlayerEntity;
 import com.dyma.tennis.exceptions.PlayerAlreadyExistsException;
 import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
@@ -20,7 +21,6 @@ import com.dyma.tennis.model.PlayerToCreate;
 import com.dyma.tennis.model.PlayerToUpdate;
 import com.dyma.tennis.model.Rank;
 import com.dyma.tennis.repository.PlayerRepository;
-import com.dyma.tennis.repository.entity.PlayerEntity;
 
 @Service
 public class PlayerService {
@@ -119,8 +119,8 @@ public class PlayerService {
   public Player update(PlayerToUpdate playerToUpdate) {
     LOGGER.info("Invoking update() with playerToUpdate={}", playerToUpdate);
     try {
-      Optional<PlayerEntity> player = playerRepository.findOneByIdentifier(playerToUpdate.identifier());
-      if (player.isEmpty()) {
+      Optional<PlayerEntity> playerEntity = playerRepository.findOneByIdentifier(playerToUpdate.identifier());
+      if (playerEntity.isEmpty()) {
         LOGGER.warn("Could not find player to update with identifier={}", playerToUpdate.identifier());
         throw new PlayerNotFoundException(playerToUpdate.identifier());
       }
@@ -133,11 +133,11 @@ public class PlayerService {
 
       }
       
-      player.get().setFirstName(playerToUpdate.firstName());
-      player.get().setLastName(playerToUpdate.lastName());
-      player.get().setBirthDate(playerToUpdate.birthDate());
-      player.get().setPoints(playerToUpdate.points());
-      PlayerEntity updatedPlayer = playerRepository.save(player.get());
+      playerEntity.get().setFirstName(playerToUpdate.firstName());
+      playerEntity.get().setLastName(playerToUpdate.lastName());
+      playerEntity.get().setBirthDate(playerToUpdate.birthDate());
+      playerEntity.get().setPoints(playerToUpdate.points());
+      PlayerEntity updatedPlayer = playerRepository.save(playerEntity.get());
     
       updateRankingPlayers();
     

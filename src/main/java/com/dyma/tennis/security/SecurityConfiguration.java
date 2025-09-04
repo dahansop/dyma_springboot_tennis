@@ -53,11 +53,14 @@ public class SecurityConfiguration {
             .requestMatchers("/accounts/login").permitAll()
             .requestMatchers("/healthcheck/**").permitAll()
             .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
-          //.requestMatchers(HttpMethod.POST, "/players/**").hasAuthority("ROLE_USER") fonctionne aussi car l'admin a le droit role_user
             .requestMatchers(HttpMethod.GET, "/players/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .requestMatchers(HttpMethod.POST, "/players/**").hasAuthority("ROLE_ADMIN")
             .requestMatchers(HttpMethod.PUT, "/players/**").hasAuthority("ROLE_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/players/**").hasAuthority("ROLE_ADMIN")
+            .requestMatchers(HttpMethod.GET, "/tournaments/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .requestMatchers(HttpMethod.POST, "/tournaments/**").hasAuthority("ROLE_ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/tournaments/**").hasAuthority("ROLE_ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/tournaments/**").hasAuthority("ROLE_ADMIN")
             .anyRequest().authenticated()
         );
     return http.build();

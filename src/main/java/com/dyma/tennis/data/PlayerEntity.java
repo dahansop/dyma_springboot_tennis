@@ -1,4 +1,4 @@
-package com.dyma.tennis.repository.entity;
+package com.dyma.tennis.data;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -49,16 +49,6 @@ public class PlayerEntity {
     this.points = points;
     this.rank = rank;
   }
-
-  /*public PlayerEntity(Long id, String lastName, String firstName, UUID identifier, LocalDate birthDate, Integer points, Integer rank) {
-    this.id = id;
-    this.lastName = lastName;
-    this.firstName = firstName;
-    this.identifier = identifier;
-    this.birthDate = birthDate;
-    this.points = points;
-    this.rank = rank;
-  }*/
   
   public Long getId() {
     return id;
@@ -104,8 +94,11 @@ public class PlayerEntity {
     this.rank = rank;
   }
 
-  // c'est l'identifiant pour trouver un joueur, on ne peut pas le modifier
   public UUID getIdentifier() {
     return identifier;
+  }
+  
+  public void setIdentifier(UUID identifier) {
+    this.identifier = identifier;
   }
 }

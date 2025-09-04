@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.dyma.tennis.repository.entity.PlayerEntity;
+import com.dyma.tennis.data.PlayerEntity;
 
 @Repository
 public interface PlayerRepository extends JpaRepository<PlayerEntity, Long> {

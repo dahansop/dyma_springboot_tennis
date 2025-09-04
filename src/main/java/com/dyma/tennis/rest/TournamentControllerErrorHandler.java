@@ -10,32 +10,32 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.dyma.tennis.exceptions.PlayerAlreadyExistsException;
-import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
-import com.dyma.tennis.exceptions.PlayerNotFoundException;
+import com.dyma.tennis.exceptions.TournamentAlreadyExistsException;
+import com.dyma.tennis.exceptions.TournamentDataRetrievalException;
+import com.dyma.tennis.exceptions.TournamentNotFoundException;
 import com.dyma.tennis.model.Error;
 
 /**
- * Gestion des erreurs du REST PlayerController
+ * Gestion des erreurs du REST tournamentController
  */
 @RestControllerAdvice
-public class PlayerControllerErrorHandler {
+public class TournamentControllerErrorHandler {
 
-  @ExceptionHandler(PlayerNotFoundException.class)
+  @ExceptionHandler(TournamentNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public Error handlePlayerNotFoundException(PlayerNotFoundException ex) {
+  public Error handleTournamentNotFoundException(TournamentNotFoundException ex) {
     return new Error(ex.getMessage());
   }
   
-  @ExceptionHandler(PlayerAlreadyExistsException.class)
+  @ExceptionHandler(TournamentAlreadyExistsException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Error handlePlayerAlreadyExistException(PlayerAlreadyExistsException ex) {
+  public Error handleTournamentAlreadyExistException(TournamentAlreadyExistsException ex) {
     return new Error(ex.getMessage());
   }
   
-  @ExceptionHandler(PlayerDataRetrievalException.class)
+  @ExceptionHandler(TournamentDataRetrievalException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public Error handlePlayerDataRetrievalException(PlayerDataRetrievalException ex) {
+  public Error handleTournamentDataRetrievalException(TournamentDataRetrievalException ex) {
     return new Error(ex.getMessage());
   }
   
@@ -50,10 +50,4 @@ public class PlayerControllerErrorHandler {
     });
     return errors;
   }
-  
-//  @ExceptionHandler(HttpMessageNotReadableException.class)
-//  @ResponseStatus(HttpStatus.BAD_REQUEST)
-//  public Error handleHttpMessageNotReadableException() {
-//    return new Error("Le message ne peut pas etre lu - JSON parsing erreur");
-//  }
 }

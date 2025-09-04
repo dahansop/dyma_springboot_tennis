@@ -91,3 +91,9 @@ docker image rm dyma-tennis-api
 ## Actuator
 
 * URL : <http://localhost:8080/actuator>
+
+Pour y avoir accès, il faut se connecter en tant qu'administrateur en utilisant la fonction "login" depuis Swagger.
+* DEV : admin/admin
+* PROD : admin/admin-prod
+
+

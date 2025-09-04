@@ -1,4 +1,4 @@
-package com.dyma.tennis.repository.entity;
+package com.dyma.tennis.data;
 
 import java.util.HashSet;
 import java.util.Set;
