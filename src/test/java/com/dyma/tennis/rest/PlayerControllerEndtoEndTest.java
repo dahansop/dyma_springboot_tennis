@@ -3,6 +3,7 @@ package com.dyma.tennis.rest;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
@@ -21,7 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.PlayerToCreate;
+import com.dyma.tennis.model.PlayerToUpdate;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,12 +44,12 @@ public class PlayerControllerEndtoEndTest {
   @Test
   public void shouldCreatePlayer() {
     // Given
-    PlayerToSave playerToCreate = new PlayerToSave("Carlos", "Alcaraz", LocalDate.of(2003, Month.MAY, 5), 4500);
+    PlayerToCreate playerToCreate = new PlayerToCreate("Carlos", "Alcaraz", LocalDate.of(2003, Month.MAY, 5), 4500);
     
     // When
     String url = "http://localhost:" + port + "/players";
-    HttpEntity<PlayerToSave> request = new HttpEntity<>(playerToCreate);
-    ResponseEntity<Player> playerResponseEntity = this.restTemplate.postForEntity(url, request, Player.class);
+    HttpEntity<PlayerToCreate> request = new HttpEntity<>(playerToCreate);
+    ResponseEntity<Player> playerResponseEntity = this.restTemplate.exchange(url, HttpMethod.POST, request, Player.class);
     
     // Then
     Assertions.assertThat(playerResponseEntity.getBody().lastName()).isEqualTo(playerToCreate.lastName());
@@ -57,11 +59,11 @@ public class PlayerControllerEndtoEndTest {
   @Test
   public void shouldFailToCreate_whenPlayerToCreateIsInvalid() {
     // Given
-    PlayerToSave playerToCreate = new PlayerToSave("Carlos", null, LocalDate.of(2003, Month.MAY, 5), 4500);
+    PlayerToCreate playerToCreate = new PlayerToCreate("Carlos", null, LocalDate.of(2003, Month.MAY, 5), 4500);
     
     // When
     String url = "http://localhost:" + port + "/players";
-    HttpEntity<PlayerToSave> request = new HttpEntity<>(playerToCreate);
+    HttpEntity<PlayerToCreate> request = new HttpEntity<>(playerToCreate);
     ResponseEntity<Player> playerResponseEntity = this.restTemplate.exchange(url, HttpMethod.POST, request, Player.class);
     
     // Then
@@ -71,11 +73,11 @@ public class PlayerControllerEndtoEndTest {
   @Test
   public void shouldUpdatePlayerRanking() {
     // Given
-    PlayerToSave playerToUpdate = new PlayerToSave("Rafael", "NadalTest", LocalDate.of(1986, Month.JUNE, 3), 1000);
+    PlayerToUpdate playerToUpdate = new PlayerToUpdate(UUID.fromString("b466c6f7-52c6-4f25-b00d-c562be41311e"), "Rafael", "NadalTest", LocalDate.of(1986, Month.JUNE, 3), 1000);
     
     // When
     String url = "http://localhost:" + port + "/players";
-    HttpEntity<PlayerToSave> request = new HttpEntity<>(playerToUpdate);
+    HttpEntity<PlayerToUpdate> request = new HttpEntity<>(playerToUpdate);
     ResponseEntity<Player> playerResponseEntity = this.restTemplate.exchange(url, HttpMethod.PUT, request, Player.class);
     
     // Then
@@ -86,10 +88,10 @@ public class PlayerControllerEndtoEndTest {
   @Test
   public void shouldDeletePlayer() {
     // Given
-    String playerToDelete = "DjokovicTest";
+    String identifier = "d27aef45-51cd-401b-a04a-b78a1327b793";
     
     // when
-    String urlDelete = "http://localhost:" + port + "/players/" + playerToDelete;
+    String urlDelete = "http://localhost:" + port + "/players/" + identifier;
     this.restTemplate.exchange(urlDelete, HttpMethod.DELETE, null, Void.class);
     
     String urlGet = "http://localhost:" + port + "/players";

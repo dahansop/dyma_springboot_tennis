@@ -10,7 +10,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 /**
  * Représente un joueur
  */
-public record PlayerToSave(
+public record PlayerToCreate(
     @NotBlank(message = "Le firstName est obligatoire") String firstName, 
     @NotBlank(message = "Le lastName est obligatoire") String lastName, 
     @NotNull(message = "La birthDate est obligatoire") @PastOrPresent(message = "La birthDate doit etre dans le passe ou le present") LocalDate birthDate, 

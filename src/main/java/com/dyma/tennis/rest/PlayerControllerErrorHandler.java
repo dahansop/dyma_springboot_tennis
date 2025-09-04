@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.dyma.tennis.exceptions.PlayerAlreadyExistException;
+import com.dyma.tennis.exceptions.PlayerAlreadyExistsException;
 import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
 import com.dyma.tennis.model.Error;
@@ -27,9 +27,9 @@ public class PlayerControllerErrorHandler {
     return new Error(ex.getMessage());
   }
   
-  @ExceptionHandler(PlayerAlreadyExistException.class)
+  @ExceptionHandler(PlayerAlreadyExistsException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Error handlePlayerAlreadyExistException(PlayerAlreadyExistException ex) {
+  public Error handlePlayerAlreadyExistException(PlayerAlreadyExistsException ex) {
     return new Error(ex.getMessage());
   }
   

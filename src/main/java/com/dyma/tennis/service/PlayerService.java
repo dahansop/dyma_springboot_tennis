@@ -3,6 +3,7 @@ package com.dyma.tennis.service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -11,11 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.dyma.tennis.exceptions.PlayerAlreadyExistException;
+import com.dyma.tennis.exceptions.PlayerAlreadyExistsException;
 import com.dyma.tennis.exceptions.PlayerDataRetrievalException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
 import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.PlayerToCreate;
+import com.dyma.tennis.model.PlayerToUpdate;
 import com.dyma.tennis.model.Rank;
 import com.dyma.tennis.repository.PlayerRepository;
 import com.dyma.tennis.repository.entity.PlayerEntity;
@@ -56,105 +58,114 @@ public class PlayerService {
   }
   
   /**
-   * Recherche un joueur à partir de son nom
-   * @param lastName Nom du joueur
+   * Recherche un joueur à partir de son identifiant
+   * @param identifier identifiant unique du joueur
    * @return joueur
    */
-  public Player getByLastName(String lastName) {
-    LOGGER.info("Invoking getByLastName() with lastName={}", lastName);
+  public Player getByIdentifier(UUID identifier) {
+    LOGGER.info("Invoking getByIdentifier() with identifier={}", identifier);
     try {
-      Optional<PlayerEntity> playerEntity = playerRepository.findOneByLastNameIgnoreCase(lastName);
+      Optional<PlayerEntity> playerEntity = playerRepository.findOneByIdentifier(identifier);
     
       if (playerEntity.isEmpty()) {
-        LOGGER.warn("Could not find player with lastName={}", lastName);
-        throw new PlayerNotFoundException(lastName);
+        LOGGER.warn("Could not find player with identifier={}", identifier);
+        throw new PlayerNotFoundException(identifier);
       }
     
       return convertEntityToDto(playerEntity.get());
     } catch (DataAccessException e) {
-      LOGGER.error("Could not find player with lastName={}", lastName, e);
+      LOGGER.error("Could not find player with identifier={}", identifier, e);
       throw new PlayerDataRetrievalException(e);
     }
   }
 
   /**
    * Permet d'ajouter un joueur à la liste
-   * @param playerToSave
+   * @param playerToCreate
    * @return
    */
-  public Player create(PlayerToSave playerToSave) {
-    LOGGER.info("Invoking create() with playerToSave={}", playerToSave);
+  public Player create(PlayerToCreate playerToCreate) {
+    LOGGER.info("Invoking create() with playerToSave={}", playerToCreate);
     try {
-      Optional<PlayerEntity> playerAlreadyExists = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
+      Optional<PlayerEntity> playerAlreadyExists = playerRepository.findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
       if (playerAlreadyExists.isPresent()) {
-        LOGGER.warn("Player to create with lastName={} already exists", playerToSave.lastName());
-        throw new PlayerAlreadyExistException(playerToSave.lastName());
+        LOGGER.warn("Player to create with firstName={} lastName={} and birthDate={} already exists", playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
+        throw new PlayerAlreadyExistsException(playerToCreate.firstName(), playerToCreate.lastName(), playerToCreate.birthDate());
       }
     
       PlayerEntity playerEntity = new PlayerEntity(
-        playerToSave.firstName(),
-        playerToSave.lastName(),
-        playerToSave.birthDate(),
-        playerToSave.points(),
+        playerToCreate.lastName(),
+        playerToCreate.firstName(),
+        UUID.randomUUID(),
+        playerToCreate.birthDate(),
+        playerToCreate.points(),
         TEMPORARY_RANK);
-      playerRepository.save(playerEntity);
+      PlayerEntity registeredPlayer = playerRepository.save(playerEntity);
     
       updateRankingPlayers();
     
-      return getByLastName(playerToSave.lastName());
+      return this.getByIdentifier(registeredPlayer.getIdentifier());
     } catch (DataAccessException e) {
-      LOGGER.error("Could not create player {}", playerToSave, e);
+      LOGGER.error("Could not create player {}", playerToCreate, e);
       throw new PlayerDataRetrievalException(e);
     }
   }
   
   /**
    * Permet de mettre à jour un joueur
-   * @param playerToSave
+   * @param playerToUpdate
    * @return
    */
-  public Player update(PlayerToSave playerToSave) {
-    LOGGER.info("Invoking update() with playerToSave={}", playerToSave);
+  public Player update(PlayerToUpdate playerToUpdate) {
+    LOGGER.info("Invoking update() with playerToUpdate={}", playerToUpdate);
     try {
-      Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
+      Optional<PlayerEntity> player = playerRepository.findOneByIdentifier(playerToUpdate.identifier());
       if (player.isEmpty()) {
-        LOGGER.warn("Could not find player to update with lastName={}", playerToSave.lastName());
-        throw new PlayerNotFoundException(playerToSave.lastName());
+        LOGGER.warn("Could not find player to update with identifier={}", playerToUpdate.identifier());
+        throw new PlayerNotFoundException(playerToUpdate.identifier());
       }
     
-      PlayerEntity playerEntity = player.get();
-      playerEntity.setBirthDate(playerToSave.birthDate());
-      playerEntity.setFirstName(playerToSave.firstName());
-      playerEntity.setPoints(playerToSave.points());
-      playerEntity = playerRepository.save(playerEntity);
+      Optional<PlayerEntity> potentiallyDuplicatedPlayer = playerRepository.findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
+      if (potentiallyDuplicatedPlayer.isPresent() && !potentiallyDuplicatedPlayer.get().getIdentifier().equals(playerToUpdate.identifier())) {
+        LOGGER.warn("Player to update with firstName={} lastName={} and birthDate={} already exists",
+            playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
+        throw new PlayerAlreadyExistsException(playerToUpdate.firstName(), playerToUpdate.lastName(), playerToUpdate.birthDate());
+
+      }
+      
+      player.get().setFirstName(playerToUpdate.firstName());
+      player.get().setLastName(playerToUpdate.lastName());
+      player.get().setBirthDate(playerToUpdate.birthDate());
+      player.get().setPoints(playerToUpdate.points());
+      PlayerEntity updatedPlayer = playerRepository.save(player.get());
     
       updateRankingPlayers();
     
-      return getByLastName(playerToSave.lastName());
+      return this.getByIdentifier(updatedPlayer.getIdentifier());
     } catch (DataAccessException e) {
-      LOGGER.error("Could not update player {}", playerToSave, e);
+      LOGGER.error("Could not update player {}", playerToUpdate, e);
       throw new PlayerDataRetrievalException(e);
     }
   }
   
   /**
    * Permet de supprimer un joueur
-   * @param lastName
+   * @param identifier
    */
-  public void delete(String lastName) {
-    LOGGER.info("Invoking delete() with lastName={}", lastName);
+  public void delete(UUID identifier) {
+    LOGGER.info("Invoking delete() with identifier={}", identifier);
     try {
-      Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(lastName);
+      Optional<PlayerEntity> player = playerRepository.findOneByIdentifier(identifier);
       if (player.isEmpty()) {
-        LOGGER.warn("Could not find player to delete with lastName={}", lastName);
-        throw new PlayerNotFoundException(lastName);
+        LOGGER.warn("Could not find player to delete with identifier={}", identifier);
+        throw new PlayerNotFoundException(identifier);
       }
 
       playerRepository.delete(player.get());
     
       updateRankingPlayers();
     } catch (DataAccessException e) {
-      LOGGER.error("Could not delete player with lastName={}", lastName, e);
+      LOGGER.error("Could not delete player with identifier={}", identifier, e);
       throw new PlayerDataRetrievalException(e);
     }
   }
@@ -177,7 +188,9 @@ public class PlayerService {
    * @return
    */
   private Player convertEntityToDto(PlayerEntity playerEntity) {
-    return new Player(playerEntity.getFirstName(), 
+    return new Player(
+        playerEntity.getIdentifier(),
+        playerEntity.getFirstName(), 
         playerEntity.getLastName(), 
         playerEntity.getBirthDate(), 
         new Rank(playerEntity.getRank(), playerEntity.getPoints()));

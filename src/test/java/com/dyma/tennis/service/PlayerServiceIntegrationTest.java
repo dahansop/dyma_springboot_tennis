@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
@@ -14,9 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.dyma.tennis.exceptions.PlayerAlreadyExistsException;
 import com.dyma.tennis.exceptions.PlayerNotFoundException;
 import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.PlayerToCreate;
+import com.dyma.tennis.model.PlayerToUpdate;
 
 
 @SpringBootTest
@@ -34,11 +37,11 @@ public class PlayerServiceIntegrationTest {
   @Test
   public void shoudlCeratePlayer() {
     // Given
-    PlayerToSave playerToSave = new PlayerToSave("John", "Doe", LocalDate.of(2000, Month.JANUARY, 1), 10000);
+    PlayerToCreate playerToCreate = new PlayerToCreate("John", "Doe", LocalDate.of(2000, Month.JANUARY, 1), 10000);
     
     // When
-    playerService.create(playerToSave);
-    Player createdPlayer = playerService.getByLastName(playerToSave.lastName());
+    Player savedPlayer = playerService.create(playerToCreate);
+    Player createdPlayer = playerService.getByIdentifier(savedPlayer.identifier());
     
     // Then
     Assertions.assertThat(createdPlayer.firstName()).isEqualTo("John");
@@ -49,13 +52,29 @@ public class PlayerServiceIntegrationTest {
   }
   
   @Test
+  public void shouldFailToCreateAnExistingPlayer() {
+      // Given
+      PlayerToCreate playerToCreate = new PlayerToCreate("John", "Doe", LocalDate.of(2000, Month.JANUARY, 1), 10000);
+      playerService.create(playerToCreate);
+      
+      PlayerToCreate duplicatedPlayerToCreate = new PlayerToCreate("John", "Doe", LocalDate.of(2000, Month.JANUARY, 1), 12000);
+
+      // When / Then
+      Exception exception = assertThrows(PlayerAlreadyExistsException.class, () -> {
+        playerService.create(duplicatedPlayerToCreate);
+       });
+      Assertions.assertThat(exception.getMessage()).contains("Player with firstName John lastName Doe and birthDate 2000-01-01 already exists.");
+  }
+  
+  @Test
   public void shouldUpdatePlayer() {
     // Given
-    PlayerToSave playerToSave = new PlayerToSave("Rafael", "NadalTest", LocalDate.of(1986, Month.JUNE, 3), 1000);
+    UUID nadalIdentifier = UUID.fromString("b466c6f7-52c6-4f25-b00d-c562be41311e");
+    PlayerToUpdate playerToUpdate = new PlayerToUpdate(nadalIdentifier, "Rafael", "NadalTest", LocalDate.of(1986, Month.JUNE, 3), 1000);
     
     // When
-    playerService.update(playerToSave);
-    Player updatedPlayer = playerService.getByLastName(playerToSave.lastName());
+    playerService.update(playerToUpdate);
+    Player updatedPlayer = playerService.getByIdentifier(nadalIdentifier);
     
     // Then
     Assertions.assertThat(updatedPlayer.rank().points()).isEqualTo(1000);
@@ -65,13 +84,13 @@ public class PlayerServiceIntegrationTest {
   @Test
   public void shouldDeletePlayer() {
     // Given
-    String playerToDelete = "DjokovicTest";
+    UUID djokovicIdentifier = UUID.fromString("d27aef45-51cd-401b-a04a-b78a1327b793");
     
     // when
-    playerService.delete(playerToDelete);
-    List<Player> allPlayers = playerService.getAllPlayers();
+    playerService.delete(djokovicIdentifier);
     
     // Then
+    List<Player> allPlayers = playerService.getAllPlayers();
     Assertions.assertThat(allPlayers)
     .extracting("lastName", "rank.position")
     .containsExactly(Tuple.tuple("NadalTest", 1), Tuple.tuple("FedererTest", 2));
@@ -80,12 +99,12 @@ public class PlayerServiceIntegrationTest {
   @Test
   public void shouldFailDelete_whenPlayerDoesNotExist() {
     // Given
-    String playerToDelete = "DoeTest";
+    UUID playerToDelete = UUID.fromString("aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb");
     
     // when / Then
     Exception exception = assertThrows(PlayerNotFoundException.class, () -> {
       playerService.delete(playerToDelete);
     });
-    Assertions.assertThat(exception.getMessage()).isEqualTo("LastName " + playerToDelete + " not found !");
+    Assertions.assertThat(exception.getMessage()).isEqualTo("Player with identifier " + playerToDelete + " not found !");
   }
 }

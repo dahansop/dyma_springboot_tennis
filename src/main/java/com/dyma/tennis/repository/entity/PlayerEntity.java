@@ -1,6 +1,7 @@
 package com.dyma.tennis.repository.entity;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,17 +34,31 @@ public class PlayerEntity {
   @Column(name = "RANK", nullable = false)
   private Integer rank;
   
+  @Column(name = "identifier", nullable = false, unique = true)
+  private UUID identifier;
+  
   public PlayerEntity() {
     
   }
   
-  public PlayerEntity(String firstName, String lastName, LocalDate birthDate, Integer points, Integer rank) {
+  public PlayerEntity(String lastName, String firstName, UUID identifier, LocalDate birthDate, Integer points, Integer rank) {
     this.lastName = lastName;
     this.firstName = firstName;
+    this.identifier = identifier;
     this.birthDate = birthDate;
     this.points = points;
     this.rank = rank;
   }
+
+  /*public PlayerEntity(Long id, String lastName, String firstName, UUID identifier, LocalDate birthDate, Integer points, Integer rank) {
+    this.id = id;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.identifier = identifier;
+    this.birthDate = birthDate;
+    this.points = points;
+    this.rank = rank;
+  }*/
   
   public Long getId() {
     return id;
@@ -53,10 +68,9 @@ public class PlayerEntity {
     return lastName;
   }
   
-  // c'est l'identifieur pour trouv les joueur on peut donc pas le modifier
-//  public void setLastName(String lastName) {
-//    this.lastName = lastName;
-//  }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
   
   public String getFirstName() {
     return firstName;
@@ -88,5 +102,10 @@ public class PlayerEntity {
   
   public void setRank(Integer rank) {
     this.rank = rank;
+  }
+
+  // c'est l'identifiant pour trouver un joueur, on ne peut pas le modifier
+  public UUID getIdentifier() {
+    return identifier;
   }
 }

@@ -1,6 +1,7 @@
 package com.dyma.tennis.rest;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dyma.tennis.model.Player;
-import com.dyma.tennis.model.PlayerToSave;
+import com.dyma.tennis.model.PlayerToCreate;
+import com.dyma.tennis.model.PlayerToUpdate;
 import com.dyma.tennis.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +51,7 @@ public class PlayerController {
     return playerService.getAllPlayers();
   }
 
-  @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son nom")
+  @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son identifiant")
   @ApiResponses(value = { 
       @ApiResponse(responseCode = "200", description = "un joueur", 
          content = {@Content(mediaType = "application/json", 
@@ -59,9 +61,9 @@ public class PlayerController {
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
-  @GetMapping("{lastName}")
-  public Player getByLastName(@PathVariable("lastName") String lastName) {
-    return playerService.getByLastName(lastName);
+  @GetMapping("{identifier}")
+  public Player getPlayer(@PathVariable("identifier") UUID identifier) {
+    return playerService.getByIdentifier(identifier);
   }
 
   @Operation(summary = "Créer un joueur", description = "Créer un joueur")
@@ -75,8 +77,8 @@ public class PlayerController {
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @PostMapping
-  public Player createPlayer(@RequestBody @Valid PlayerToSave playerToSave) {
-    return playerService.create(playerToSave);
+  public Player createPlayer(@RequestBody @Valid PlayerToCreate playerToCreate) {
+    return playerService.create(playerToCreate);
   }
 
   @Operation(summary = "Mise à jour d'un joueur", description = "Mise à jour d'un joueur")
@@ -93,8 +95,8 @@ public class PlayerController {
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @PutMapping
-  public Player updatePlayer(@RequestBody @Valid PlayerToSave playerToSave) {
-    return playerService.update(playerToSave);
+  public Player updatePlayer(@RequestBody @Valid PlayerToUpdate playerToUpdate) {
+    return playerService.update(playerToUpdate);
   }
 
   @Operation(summary = "Suppression d'un joueur", description = "Suppression d'un joueur à partir de son nom")
@@ -105,8 +107,8 @@ public class PlayerController {
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
-  @DeleteMapping("{lastName}")
-  public void deletePlayerByLastName(@PathVariable("lastName") String lastName) {
-    playerService.delete(lastName);
+  @DeleteMapping("{identifier}")
+  public void deletePlayer(@PathVariable("identifier") UUID identifier) {
+    playerService.delete(identifier);
   }
 }

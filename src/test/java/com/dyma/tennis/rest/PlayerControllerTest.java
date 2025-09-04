@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -44,11 +46,12 @@ public class PlayerControllerTest {
   @Test
   public void shouldBeRetrievePLayer() throws Exception {
     // Given
-    String playertoRetrieve = "nadal";
-    Mockito.when(playerService.getByLastName(playertoRetrieve)).thenReturn(PlayerList.RAFAEL_NADAL);
+    String identifier = "b466c6f7-52c6-4f25-b00d-c562be41311e";
+    UUID playerToRetrieve = UUID.fromString(identifier);
+    Mockito.when(playerService.getByIdentifier(playerToRetrieve)).thenReturn(PlayerList.RAFAEL_NADAL);
     
     // When / then
-    mockMvc.perform(get("/players/" + playertoRetrieve))
+    mockMvc.perform(get("/players/" + identifier))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.lastName", CoreMatchers.is("Nadal")))
       .andExpect(jsonPath("$.rank.position", CoreMatchers.is(1)));
@@ -57,12 +60,13 @@ public class PlayerControllerTest {
   @Test
   public void shouldReturn404NotFound_whenPLayerDoesNotExist() throws Exception {
     // Given
-    String playerToRetrieve = "doe";
-    Mockito.when(playerService.getByLastName(playerToRetrieve)).thenThrow(new PlayerNotFoundException(playerToRetrieve));
+    String identifier = "aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb";
+    UUID playerToRetrieve = UUID.fromString(identifier);
+    Mockito.when(playerService.getByIdentifier(playerToRetrieve)).thenThrow(new PlayerNotFoundException(playerToRetrieve));
     
     // When / then
-    mockMvc.perform(get("/players/" + playerToRetrieve))
+    mockMvc.perform(get("/players/" + identifier))
       .andExpect(status().isNotFound())
-      .andExpect(jsonPath("$.errorDetails", CoreMatchers.is("LastName " + playerToRetrieve + " not found !")));
+      .andExpect(jsonPath("$.errorDetails", CoreMatchers.is("Player with identifier " + identifier + " not found !")));
   }
 }

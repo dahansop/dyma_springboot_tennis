@@ -2,6 +2,7 @@ package com.dyma.tennis.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,11 +62,11 @@ public class PlayerServiceTest {
   @Test
   public void shouldRetrievePlayer() {
     // given
-    String playerToRetrieve = "nadal";
-    Mockito.when(playerRepository.findOneByLastNameIgnoreCase(playerToRetrieve)).thenReturn(Optional.of(PlayerEntityList.RAFAEL_NADAL));
+    UUID playerToRetrieve = UUID.fromString("aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb");
+    Mockito.when(playerRepository.findOneByIdentifier(playerToRetrieve)).thenReturn(Optional.of(PlayerEntityList.RAFAEL_NADAL));
     
     // When
-    Player retrievePlayer = playerService.getByLastName(playerToRetrieve);
+    Player retrievePlayer = playerService.getByIdentifier(playerToRetrieve);
     
     // then
     Assertions.assertThat(retrievePlayer.lastName()).isEqualTo("Nadal");
@@ -76,13 +77,14 @@ public class PlayerServiceTest {
   @Test
   public void shouldFailtoRetrievePlayer_whenPlayerDoesNotExist() {
     // Given
-    String unknownPlayer = "doe";
-    Mockito.when(playerRepository.findOneByLastNameIgnoreCase(unknownPlayer)).thenReturn(Optional.empty());
+    String identifier = "aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb";
+    UUID unknownPlayer = UUID.fromString(identifier);
+    Mockito.when(playerRepository.findOneByIdentifier(unknownPlayer)).thenReturn(Optional.empty());
   
     // When / Then
     Exception exception = assertThrows(PlayerNotFoundException.class, () ->{
-      playerService.getByLastName(unknownPlayer);
+      playerService.getByIdentifier(unknownPlayer);
     });
-    Assertions.assertThat(exception.getMessage()).isEqualTo("LastName " + unknownPlayer + " not found !");
+    Assertions.assertThat(exception.getMessage()).isEqualTo("Player with identifier " + identifier + " not found !");
   }
 }
