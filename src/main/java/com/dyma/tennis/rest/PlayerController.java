@@ -19,11 +19,14 @@ import com.dyma.tennis.model.PlayerToUpdate;
 import com.dyma.tennis.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -33,12 +36,13 @@ import jakarta.validation.Valid;
 @Tag(name = "Tennis players API")
 @RestController
 @RequestMapping("/players")
+@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class PlayerController {
 
   @Autowired
   private PlayerService playerService;
 
-  @Operation(summary = "Liste des joueurs", description = "Liste des joueurs")
+  @Operation(summary = "Liste des joueurs", description = "Liste des joueurs", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "la liste des joueurs",
          content = {@Content(mediaType = "application/json",
@@ -50,7 +54,7 @@ public class PlayerController {
     return playerService.getAllPlayers();
   }
 
-  @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son identifiant")
+  @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son identifiant", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "un joueur",
          content = {@Content(mediaType = "application/json",
@@ -65,7 +69,7 @@ public class PlayerController {
     return playerService.getByIdentifier(identifier);
   }
 
-  @Operation(summary = "Créer un joueur", description = "Créer un joueur")
+  @Operation(summary = "Créer un joueur", description = "Créer un joueur", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le joueur créé",
           content = {@Content(mediaType = "application/json",
@@ -80,7 +84,7 @@ public class PlayerController {
     return playerService.create(playerToCreate);
   }
 
-  @Operation(summary = "Mise à jour d'un joueur", description = "Mise à jour d'un joueur")
+  @Operation(summary = "Mise à jour d'un joueur", description = "Mise à jour d'un joueur", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le joueur mis à jour",
          content = {@Content(mediaType = "application/json",
@@ -98,7 +102,7 @@ public class PlayerController {
     return playerService.update(playerToUpdate);
   }
 
-  @Operation(summary = "Suppression d'un joueur", description = "Suppression d'un joueur à partir de son nom")
+  @Operation(summary = "Suppression d'un joueur", description = "Suppression d'un joueur à partir de son nom", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le joueur a été supprimé"),
       @ApiResponse(responseCode = "404", description = "Joueur non trouvé",

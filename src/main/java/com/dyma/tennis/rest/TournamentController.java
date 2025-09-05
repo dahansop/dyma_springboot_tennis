@@ -18,11 +18,14 @@ import com.dyma.tennis.service.RegistrationService;
 import com.dyma.tennis.service.TournamentService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -33,6 +36,7 @@ import jakarta.validation.Valid;
 @Tag(name = "Tournaments API")
 @RestController
 @RequestMapping("/tournaments")
+@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class TournamentController {
 
   @Autowired
@@ -41,7 +45,7 @@ public class TournamentController {
   @Autowired
   private RegistrationService registrationService;
 
-  @Operation(summary = "Liste des tournois", description = "Liste des tournois")
+  @Operation(summary = "Liste des tournois", description = "Liste des tournois", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "la liste des tournois",
          content = {@Content(mediaType = "application/json",
@@ -53,7 +57,7 @@ public class TournamentController {
     return tournamentService.getAllTournaments();
   }
 
-  @Operation(summary = "Recherche un tournois", description = "Recherche un tournois a partir de son identifiant")
+  @Operation(summary = "Recherche un tournois", description = "Recherche un tournois a partir de son identifiant", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "un tournois",
          content = {@Content(mediaType = "application/json",
@@ -68,7 +72,7 @@ public class TournamentController {
     return tournamentService.getByIdentifier(identifier);
   }
 
-  @Operation(summary = "Créer un tournois", description = "Créer un tournois")
+  @Operation(summary = "Créer un tournois", description = "Créer un tournois", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le tournois créé",
           content = {@Content(mediaType = "application/json",
@@ -83,7 +87,7 @@ public class TournamentController {
     return tournamentService.create(tournamentToCreate);
   }
 
-  @Operation(summary = "Mise à jour d'un tournois", description = "Mise à jour d'un tournois")
+  @Operation(summary = "Mise à jour d'un tournois", description = "Mise à jour d'un tournois", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le tournois mis à jour",
          content = {@Content(mediaType = "application/json",
@@ -101,7 +105,7 @@ public class TournamentController {
     return tournamentService.update(tournamentToUpdate);
   }
 
-  @Operation(summary = "Suppression d'un tournois", description = "Suppression d'un tournois à partir de son nom")
+  @Operation(summary = "Suppression d'un tournois", description = "Suppression d'un tournois à partir de son nom", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le tournois a été supprimé"),
       @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
@@ -114,7 +118,7 @@ public class TournamentController {
     tournamentService.delete(identifier);
   }
 
-  @Operation(summary = "Inscrire un joueur a un tournoi", description = "Inscrire un joueur a un tournoi")
+  @Operation(summary = "Inscrire un joueur a un tournoi", description = "Inscrire un joueur a un tournoi", security = {@SecurityRequirement(name = "bearerAuth")})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Joueur inscrit au tournoi"),
       @ApiResponse(responseCode = "400", description = "Le joueur n'a pas pu etre inscrit au tournois",
