@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dyma.tennis.model.Tournament;
 import com.dyma.tennis.model.TournamentToCreate;
 import com.dyma.tennis.model.TournamentToUpdate;
+import com.dyma.tennis.service.RegistrationService;
 import com.dyma.tennis.service.TournamentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ import jakarta.validation.Valid;
 
 /**
  * API REST des tournois de tennis
- * 
+ *
  */
 @Tag(name = "Tournaments API")
 @RestController
@@ -36,10 +37,13 @@ public class TournamentController {
 
   @Autowired
   private TournamentService tournamentService;
-  
+
+  @Autowired
+  private RegistrationService registrationService;
+
   @Operation(summary = "Liste des tournois", description = "Liste des tournois")
-  @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "la liste des tournois", 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "la liste des tournois",
          content = {@Content(mediaType = "application/json",
          array = @ArraySchema(schema = @Schema(implementation = Tournament.class))) }),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
@@ -48,14 +52,14 @@ public class TournamentController {
   public List<Tournament> list() {
     return tournamentService.getAllTournaments();
   }
-  
+
   @Operation(summary = "Recherche un tournois", description = "Recherche un tournois a partir de son identifiant")
-  @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "un tournois", 
-         content = {@Content(mediaType = "application/json", 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "un tournois",
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Tournament.class))}),
       @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
@@ -63,14 +67,14 @@ public class TournamentController {
   public Tournament getTournament(@PathVariable("identifier") UUID identifier) {
     return tournamentService.getByIdentifier(identifier);
   }
-  
+
   @Operation(summary = "Créer un tournois", description = "Créer un tournois")
-  @ApiResponses(value = { 
+  @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le tournois créé",
           content = {@Content(mediaType = "application/json",
           schema = @Schema(implementation = Tournament.class)) }),
       @ApiResponse(responseCode = "400", description = "Le tournois existe déjà",
-          content = {@Content(mediaType = "application/json", 
+          content = {@Content(mediaType = "application/json",
           schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
@@ -78,17 +82,17 @@ public class TournamentController {
   public Tournament createTournament(@RequestBody @Valid TournamentToCreate tournamentToCreate) {
     return tournamentService.create(tournamentToCreate);
   }
-  
+
   @Operation(summary = "Mise à jour d'un tournois", description = "Mise à jour d'un tournois")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "le tournois mis à jour", 
-         content = {@Content(mediaType = "application/json", 
+      @ApiResponse(responseCode = "200", description = "le tournois mis à jour",
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Tournament.class)) }),
       @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "400", description = "Information manquante ou illisible",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
@@ -98,15 +102,28 @@ public class TournamentController {
   }
 
   @Operation(summary = "Suppression d'un tournois", description = "Suppression d'un tournois à partir de son nom")
-  @ApiResponses(value = { 
+  @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le tournois a été supprimé"),
       @ApiResponse(responseCode = "404", description = "Tournois non trouvé",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
   @DeleteMapping("{identifier}")
   public void deleteTournament(@PathVariable("identifier") UUID identifier) {
     tournamentService.delete(identifier);
+  }
+
+  @Operation(summary = "Inscrire un joueur a un tournoi", description = "Inscrire un joueur a un tournoi")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Joueur inscrit au tournoi"),
+      @ApiResponse(responseCode = "400", description = "Le joueur n'a pas pu etre inscrit au tournois",
+      content = {@Content(mediaType = "application/json",
+      schema = @Schema(implementation = Error.class))}),
+   @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
+  })
+  @PostMapping("{tournamentIdentifier}/players/{playerIdentifier}/register")
+  public void register(@PathVariable("tournamentIdentifier") UUID tournamentIdentifier, @PathVariable("playerIdentifier") UUID playerToRegister) {
+    registrationService.register(tournamentIdentifier, playerToRegister);
   }
 }

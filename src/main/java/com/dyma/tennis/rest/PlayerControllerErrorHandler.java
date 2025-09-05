@@ -26,19 +26,19 @@ public class PlayerControllerErrorHandler {
   public Error handlePlayerNotFoundException(PlayerNotFoundException ex) {
     return new Error(ex.getMessage());
   }
-  
+
   @ExceptionHandler(PlayerAlreadyExistsException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public Error handlePlayerAlreadyExistException(PlayerAlreadyExistsException ex) {
     return new Error(ex.getMessage());
   }
-  
+
   @ExceptionHandler(PlayerDataRetrievalException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public Error handlePlayerDataRetrievalException(PlayerDataRetrievalException ex) {
     return new Error(ex.getMessage());
   }
-  
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public Map<String, String> handleValidationException(MethodArgumentNotValidException ex) {
@@ -50,7 +50,7 @@ public class PlayerControllerErrorHandler {
     });
     return errors;
   }
-  
+
 //  @ExceptionHandler(HttpMessageNotReadableException.class)
 //  @ResponseStatus(HttpStatus.BAD_REQUEST)
 //  public Error handleHttpMessageNotReadableException() {

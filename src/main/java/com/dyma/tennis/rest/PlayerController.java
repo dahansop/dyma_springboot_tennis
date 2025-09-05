@@ -37,10 +37,10 @@ public class PlayerController {
 
   @Autowired
   private PlayerService playerService;
-  
+
   @Operation(summary = "Liste des joueurs", description = "Liste des joueurs")
-  @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "la liste des joueurs", 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "la liste des joueurs",
          content = {@Content(mediaType = "application/json",
          array = @ArraySchema(schema = @Schema(implementation = Player.class))) }),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
@@ -51,12 +51,12 @@ public class PlayerController {
   }
 
   @Operation(summary = "Recherche un joueur", description = "Recherche un joueur a partir de son identifiant")
-  @ApiResponses(value = { 
-      @ApiResponse(responseCode = "200", description = "un joueur", 
-         content = {@Content(mediaType = "application/json", 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "un joueur",
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Player.class))}),
       @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
@@ -66,12 +66,12 @@ public class PlayerController {
   }
 
   @Operation(summary = "Créer un joueur", description = "Créer un joueur")
-  @ApiResponses(value = { 
+  @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le joueur créé",
           content = {@Content(mediaType = "application/json",
           schema = @Schema(implementation = Player.class)) }),
       @ApiResponse(responseCode = "400", description = "Le joueur existe déjà",
-          content = {@Content(mediaType = "application/json", 
+          content = {@Content(mediaType = "application/json",
           schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
@@ -82,14 +82,14 @@ public class PlayerController {
 
   @Operation(summary = "Mise à jour d'un joueur", description = "Mise à jour d'un joueur")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "le joueur mis à jour", 
-         content = {@Content(mediaType = "application/json", 
+      @ApiResponse(responseCode = "200", description = "le joueur mis à jour",
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Player.class)) }),
       @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "400", description = "Information manquante ou illisible",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })
@@ -99,10 +99,10 @@ public class PlayerController {
   }
 
   @Operation(summary = "Suppression d'un joueur", description = "Suppression d'un joueur à partir de son nom")
-  @ApiResponses(value = { 
+  @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "le joueur a été supprimé"),
       @ApiResponse(responseCode = "404", description = "Joueur non trouvé",
-         content = {@Content(mediaType = "application/json", 
+         content = {@Content(mediaType = "application/json",
          schema = @Schema(implementation = Error.class))}),
       @ApiResponse(responseCode = "403", description = "l'utilisateur n'est pas autorisé")
   })

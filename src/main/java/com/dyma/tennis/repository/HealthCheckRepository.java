@@ -13,9 +13,9 @@ public class HealthCheckRepository {
 
 	@Autowired
 	private EntityManager entityManager;
-	
+
 	/**
-	 * 
+	 *
 	 * @return Le nombre de connexion ouverte pour l'application
 	 */
 	public Long countApplicationConection() {

@@ -30,16 +30,16 @@ public class TournamentControllerEndtoEndTest {
 
   @LocalServerPort
   private int port;
-  
+
   @Autowired
   private TestRestTemplate restTemplate;
-  
+
   @BeforeEach
   void clearDatabase(@Autowired Flyway flyway) {
     flyway.clean();
     flyway.migrate();
   }
-  
+
   @Test
   public void shouldCreateTournament() {
     // Given
@@ -52,34 +52,34 @@ public class TournamentControllerEndtoEndTest {
         500000,
         64
     );
-    
+
     // When
     String url = "http://localhost:" + port + "/tournaments";
     HttpEntity<TournamentToCreate> request = new HttpEntity<>(tournamentToCreate);
     ResponseEntity<Tournament> tournamentResponseEntity = this.restTemplate.exchange(url, HttpMethod.POST, request, Tournament.class);
-    
+
     // Then
-    Assertions.assertThat(tournamentResponseEntity.getBody().name()).isEqualTo("Madrid Master 1000");
-    Assertions.assertThat(tournamentResponseEntity.getBody().startDate()).isEqualTo(startDate);
-    Assertions.assertThat(tournamentResponseEntity.getBody().endDate()).isEqualTo(endDate);
-    Assertions.assertThat(tournamentResponseEntity.getBody().prizeMoney()).isEqualTo(500000);
-    Assertions.assertThat(tournamentResponseEntity.getBody().capacity()).isEqualTo(64);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().name()).isEqualTo("Madrid Master 1000");
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().startDate()).isEqualTo(startDate);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().endDate()).isEqualTo(endDate);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().prizeMoney()).isEqualTo(500000);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().capacity()).isEqualTo(64);
   }
-  
+
   @Test
   public void shouldFailToCreate_whenTournamentToCreateIsInvalid() {
     // Given
     TournamentToCreate tournamentToCreate = new TournamentToCreate(null, LocalDate.now().plusDays(10), LocalDate.now().plusDays(17), 500000, 64);
-    
+
     // When
     String url = "http://localhost:" + port + "/tournaments";
     HttpEntity<TournamentToCreate> request = new HttpEntity<>(tournamentToCreate);
     ResponseEntity<Tournament> tournamentResponseEntity = this.restTemplate.exchange(url, HttpMethod.POST, request, Tournament.class);
-    
+
     // Then
     Assertions.assertThat(tournamentResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
   }
-  
+
   @Test
   public void shouldUpdateTournament() {
     // Given
@@ -92,35 +92,56 @@ public class TournamentControllerEndtoEndTest {
         endDate,
         2500000,
         128);
-    
+
     // When
     String url = "http://localhost:" + port + "/tournaments";
     HttpEntity<TournamentToUpdate> request = new HttpEntity<>(tournamentToUpdate);
     ResponseEntity<Tournament> tournamentResponseEntity = this.restTemplate.exchange(url, HttpMethod.PUT, request, Tournament.class);
-    
+
     // Then
-    Assertions.assertThat(tournamentResponseEntity.getBody().name()).isEqualTo("Roland Garros");
-    Assertions.assertThat(tournamentResponseEntity.getBody().startDate()).isEqualTo(startDate);
-    Assertions.assertThat(tournamentResponseEntity.getBody().endDate()).isEqualTo(endDate);
-    Assertions.assertThat(tournamentResponseEntity.getBody().prizeMoney()).isEqualTo(2500000);
-    Assertions.assertThat(tournamentResponseEntity.getBody().capacity()).isEqualTo(128);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().name()).isEqualTo("Roland Garros");
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().startDate()).isEqualTo(startDate);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().endDate()).isEqualTo(endDate);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().prizeMoney()).isEqualTo(2500000);
+    Assertions.assertThat(tournamentResponseEntity.getBody().info().capacity()).isEqualTo(128);
   }
-  
+
   @Test
   public void shouldDeleteTournament() {
     // Given
     String identifier = "124edf07-64fa-4ea4-a65e-3bfe96df5781";
-    
+
     // when
     String urlDelete = "http://localhost:" + port + "/tournaments/" + identifier;
     this.restTemplate.exchange(urlDelete, HttpMethod.DELETE, null, Void.class);
-    
+
     String urlGet = "http://localhost:" + port + "/tournaments";
     ResponseEntity<List<Tournament>> allTournamentsResponseEntity = this.restTemplate.exchange(urlGet, HttpMethod.GET, null, new ParameterizedTypeReference<List<Tournament>>() {});
-    
-    //Then
+
+    // Then
     Assertions.assertThat(allTournamentsResponseEntity.getBody())
-      .extracting("name")
+      .extracting("info.name")
       .containsExactly("Australian Open", "French Open", "Wimbledon");
+  }
+
+  @Test
+  public void shouldRegisterPlayerTotournament() {
+    // Given
+    String tournamentIdentifier = "d4a9f8e2-9051-4739-90bc-1cb7e4c7ad42";
+    UUID frenchOpen = UUID.fromString(tournamentIdentifier);
+    String playerIdentifier = "b466c6f7-52c6-4f25-b00d-c562be41311e";
+    UUID rafaelNadal = UUID.fromString(playerIdentifier);
+
+    // When
+    String urlRegister = "http://localhost:" + port + "/tournaments/" + frenchOpen + "/players/" + rafaelNadal + "/register";
+    this.restTemplate.exchange(urlRegister, HttpMethod.POST, null, Void.class);
+
+    String urlGet = "http://localhost:" + port + "/tournaments/" + tournamentIdentifier;
+    ResponseEntity<Tournament> tournamentResponseEntity = this.restTemplate.exchange(urlGet, HttpMethod.GET, null, Tournament.class);
+
+    // Then
+    Assertions.assertThat(tournamentResponseEntity.getBody().players()).isNotEmpty();
+    Assertions.assertThat(tournamentResponseEntity.getBody().players().size()).isEqualTo(1);
+    Assertions.assertThat(tournamentResponseEntity.getBody().players().iterator().next().lastName()).isEqualTo("NadalTest");
   }
 }

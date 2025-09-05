@@ -13,7 +13,7 @@ import com.dyma.tennis.data.PlayerEntity;
 public interface PlayerRepository extends JpaRepository<PlayerEntity, Long> {
 
   public Optional<PlayerEntity> findOneByIdentifier(UUID identifier);
-  
+
   public Optional<PlayerEntity> findOneByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndBirthDate(String firstName, String lastName, LocalDate birthDate);
-  
+
 }

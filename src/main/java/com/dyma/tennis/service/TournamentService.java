@@ -15,6 +15,7 @@ import com.dyma.tennis.data.TournamentEntity;
 import com.dyma.tennis.exceptions.TournamentAlreadyExistsException;
 import com.dyma.tennis.exceptions.TournamentDataRetrievalException;
 import com.dyma.tennis.exceptions.TournamentNotFoundException;
+import com.dyma.tennis.mapper.TournamentMapper;
 import com.dyma.tennis.model.Tournament;
 import com.dyma.tennis.model.TournamentToCreate;
 import com.dyma.tennis.model.TournamentToUpdate;
@@ -24,18 +25,22 @@ import com.dyma.tennis.repository.TournamentRepository;
 public class TournamentService {
 
   private final Logger LOGGER = LoggerFactory.getLogger(TournamentService.class);
-  
+
   @Autowired
-  private TournamentRepository tournamentRepository;
-  
+  private final TournamentRepository tournamentRepository;
+
+  @Autowired
+  private final TournamentMapper tournamentMapper;
+
   /**
    * Constructeur
    * @param tournamentRepository
    */
-  public TournamentService(TournamentRepository tournamentRepository) {
+  public TournamentService(TournamentRepository tournamentRepository, TournamentMapper tournamentMapper) {
     this.tournamentRepository = tournamentRepository;
+    this.tournamentMapper = tournamentMapper;
   }
-  
+
   /**
    * Récupère la liste de tout les tournois
    * @return liste des tournois
@@ -44,14 +49,14 @@ public class TournamentService {
     LOGGER.info("Invoking getAllTournaments()");
     try {
       return tournamentRepository.findAll().stream()
-          .map(tournamentEntity -> convertEntityToDto(tournamentEntity))
+          .map(tournamentMapper::tournamentEntityToTournament)
           .collect(Collectors.toList());
     } catch (DataAccessException e) {
       LOGGER.error("Could not retrieve tournaments", e);
       throw new TournamentDataRetrievalException(e);
     }
   }
-  
+
   /**
    * Recherche un tournois à partir de son identifiant
    * @param identifier identifiant unique du tournois
@@ -61,19 +66,19 @@ public class TournamentService {
     LOGGER.info("Invoking getByIdentifier() with identifier={}", identifier);
     try {
       Optional<TournamentEntity> tournamentEntity = tournamentRepository.findOneByIdentifier(identifier);
-      
+
       if (tournamentEntity.isEmpty()) {
         LOGGER.warn("Could not find tournament with identifier={}", identifier);
         throw new TournamentNotFoundException(identifier);
       }
-      
-      return convertEntityToDto(tournamentEntity.get());
+
+      return tournamentMapper.tournamentEntityToTournament(tournamentEntity.get());
     } catch (DataAccessException e) {
       LOGGER.error("Could not find tournament with identifier={}", identifier, e);
       throw new TournamentDataRetrievalException(e);
     }
   }
-  
+
   /**
    * Permet d'ajouter un tournois à la liste
    * @param tournamentToCreate tournois à créer
@@ -87,7 +92,7 @@ public class TournamentService {
         LOGGER.warn("Tournament to create with name={} already exists", tournamentToCreate.name());
         throw new TournamentAlreadyExistsException(tournamentToCreate.name());
       }
-      
+
       TournamentEntity tournamentEntity = new TournamentEntity(
           UUID.randomUUID(),
           tournamentToCreate.name(),
@@ -96,14 +101,14 @@ public class TournamentService {
           tournamentToCreate.prizeMoney(),
           tournamentToCreate.capacity());
       TournamentEntity registredTournament = tournamentRepository.save(tournamentEntity);
-      
+
       return this.getByIdentifier(registredTournament.getIdentifier());
     } catch (DataAccessException e) {
       LOGGER.error("Could not create tournament {}", tournamentToCreate, e);
       throw new TournamentDataRetrievalException(e);
     }
   }
-  
+
   /**
    * Permet de mettre à jour un tournois
    * @param tournamentToUpdate trounois à mettre à jour
@@ -117,29 +122,29 @@ public class TournamentService {
         LOGGER.warn("Could not find tournament to update with identifier={}", tournamentToUpdate.identifier());
         throw new TournamentNotFoundException(tournamentToUpdate.identifier());
       }
-      
+
       Optional<TournamentEntity> potentiallyDuplicatedtournament = tournamentRepository.findOneByNameIgnoreCase(tournamentToUpdate.name());
       if (potentiallyDuplicatedtournament.isPresent() &&
           !potentiallyDuplicatedtournament.get().getIdentifier().equals(tournamentToUpdate.identifier())) {
         LOGGER.warn("Tournament to update with name={} already exists", tournamentToUpdate.name());
         throw new TournamentAlreadyExistsException(tournamentToUpdate.name());
       }
-      
+
       tournamentEntity.get().setName(tournamentToUpdate.name());
       tournamentEntity.get().setStartDate(tournamentToUpdate.startDate());
       tournamentEntity.get().setEndDate(tournamentToUpdate.endDate());
       tournamentEntity.get().setPrizeMoney(tournamentToUpdate.prizeMoney());
       tournamentEntity.get().setCapacity(tournamentToUpdate.capacity());
-      
+
       TournamentEntity updatedtournament = tournamentRepository.save(tournamentEntity.get());
-      
+
       return this.getByIdentifier(updatedtournament.getIdentifier());
     } catch (DataAccessException e) {
       LOGGER.error("Could not update tournament {}", tournamentToUpdate, e);
       throw new TournamentDataRetrievalException(e);
     }
   }
-  
+
   /**
    * Supprime un tournois à partir de son identifiant
    * @param identifier Identifiant du tournois
@@ -152,28 +157,12 @@ public class TournamentService {
         LOGGER.warn("Could not find tournament to delete with identifier={}", identifier);
         throw new TournamentNotFoundException(identifier);
       }
-      
+
       tournamentRepository.delete(tournamentEntity.get());
-      
+
     } catch (DataAccessException e) {
       LOGGER.error("Could not delete tournament with identifier={}", identifier, e);
       throw new TournamentDataRetrievalException(e);
     }
-  }
-  
-  /**
-   * Converti un TournamentEntity en tournament
-   * 
-   * @param entity
-   * @return
-   */
-  private Tournament convertEntityToDto(TournamentEntity entity) {
-    return new Tournament(
-        entity.getIdentifier(),
-        entity.getName(),
-        entity.getStartDate(),
-        entity.getEndDate(),
-        entity.getPrizeMoney(),
-        entity.getCapacity());
   }
 }

@@ -15,7 +15,7 @@ public class HealthCheckService {
 
   @Autowired
   private HealthCheckRepository healthCheckRepository;
-  
+
 	public HealthCheck healthCheck() {
 		Long nbAppConnection = healthCheckRepository.countApplicationConection();
 		if (nbAppConnection > 0) {

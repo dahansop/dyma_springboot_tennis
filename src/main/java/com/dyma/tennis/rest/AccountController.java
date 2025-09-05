@@ -35,9 +35,9 @@ public class AccountController {
 
   @Autowired
   private AuthenticationManagerBuilder authenticationManagerBuilder;
-    
+
   private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
-  
+
   private final SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 
   @Operation(summary = "Connexion utilisateur", description = "Connexion utilisateur")
@@ -54,7 +54,7 @@ public class AccountController {
     securityContext.setAuthentication(authentication);
     securityContextRepository.saveContext(securityContext, request, response);
   }
-  
+
   @Operation(summary = "Déconnexion de l'utilisateur", description = "Déconnexion de l'utilisateur")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Utilisateur déconnecté"),

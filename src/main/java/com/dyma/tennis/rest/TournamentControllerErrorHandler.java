@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.dyma.tennis.exceptions.TournamentAlreadyExistsException;
 import com.dyma.tennis.exceptions.TournamentDataRetrievalException;
 import com.dyma.tennis.exceptions.TournamentNotFoundException;
+import com.dyma.tennis.exceptions.TournamentRegistrationException;
 import com.dyma.tennis.model.Error;
 
 /**
@@ -26,19 +27,25 @@ public class TournamentControllerErrorHandler {
   public Error handleTournamentNotFoundException(TournamentNotFoundException ex) {
     return new Error(ex.getMessage());
   }
-  
+
   @ExceptionHandler(TournamentAlreadyExistsException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public Error handleTournamentAlreadyExistException(TournamentAlreadyExistsException ex) {
     return new Error(ex.getMessage());
   }
-  
+
   @ExceptionHandler(TournamentDataRetrievalException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public Error handleTournamentDataRetrievalException(TournamentDataRetrievalException ex) {
     return new Error(ex.getMessage());
   }
-  
+
+  @ExceptionHandler(TournamentRegistrationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public Error handleTournamentRegistrationException(TournamentRegistrationException ex) {
+    return new Error(ex.getMessage());
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public Map<String, String> handleValidationException(MethodArgumentNotValidException ex) {

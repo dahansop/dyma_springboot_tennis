@@ -24,46 +24,46 @@ public class PlayerControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
-  
+
   @MockitoBean
   private PlayerService playerService;
-  
+
   @Test
   public void shouldListAllPlayers() throws Exception {
     // Given
     Mockito.when(playerService.getAllPlayers()).thenReturn(PlayerList.ALL);
-    
+
     // When / then
     mockMvc.perform(get("/players"))
     .andExpect(status().isOk())
     .andExpect(jsonPath("$", hasSize(4)))
-    .andExpect(jsonPath("$[0].lastName", CoreMatchers.is("Nadal")))
-    .andExpect(jsonPath("$[1].lastName", CoreMatchers.is("Djokovic")))
-    .andExpect(jsonPath("$[2].lastName", CoreMatchers.is("Federer")))
-    .andExpect(jsonPath("$[3].lastName", CoreMatchers.is("Murray")));
+    .andExpect(jsonPath("$[0].info.lastName", CoreMatchers.is("Nadal")))
+    .andExpect(jsonPath("$[1].info.lastName", CoreMatchers.is("Djokovic")))
+    .andExpect(jsonPath("$[2].info.lastName", CoreMatchers.is("Federer")))
+    .andExpect(jsonPath("$[3].info.lastName", CoreMatchers.is("Murray")));
   }
-  
+
   @Test
   public void shouldBeRetrievePLayer() throws Exception {
     // Given
     String identifier = "b466c6f7-52c6-4f25-b00d-c562be41311e";
     UUID playerToRetrieve = UUID.fromString(identifier);
     Mockito.when(playerService.getByIdentifier(playerToRetrieve)).thenReturn(PlayerList.RAFAEL_NADAL);
-    
+
     // When / then
     mockMvc.perform(get("/players/" + identifier))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.lastName", CoreMatchers.is("Nadal")))
-      .andExpect(jsonPath("$.rank.position", CoreMatchers.is(1)));
+      .andExpect(jsonPath("$.info.lastName", CoreMatchers.is("Nadal")))
+      .andExpect(jsonPath("$.info.rank.position", CoreMatchers.is(1)));
   }
-  
+
   @Test
   public void shouldReturn404NotFound_whenPLayerDoesNotExist() throws Exception {
     // Given
     String identifier = "aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb";
     UUID playerToRetrieve = UUID.fromString(identifier);
     Mockito.when(playerService.getByIdentifier(playerToRetrieve)).thenThrow(new PlayerNotFoundException(playerToRetrieve));
-    
+
     // When / then
     mockMvc.perform(get("/players/" + identifier))
       .andExpect(status().isNotFound())

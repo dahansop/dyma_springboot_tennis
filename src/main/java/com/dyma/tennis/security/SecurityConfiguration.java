@@ -42,11 +42,11 @@ public class SecurityConfiguration {
         // on permet le téléchargement des styles en ligne
         // interdiction de mettre l'application dans une frame
         // plein ecran uniquement de l'appli ; caméra, microphone et geoloclisation interdite
-        .headers(headers -> 
+        .headers(headers ->
             headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self' data:; style-src 'self' 'unsafe-line';"))
             .frameOptions(frameOptionsConfig -> frameOptionsConfig.deny())
             .permissionsPolicyHeader(permissionsPolicyConfig -> permissionsPolicyConfig.policy("fullscreen=(self), geolocalisation=(), microphone=(), camera=()")))
-        .authorizeHttpRequests(authorizations ->  
+        .authorizeHttpRequests(authorizations ->
           authorizations
             .requestMatchers("/swagger-ui/**").permitAll()
             .requestMatchers("/v3/api-docs/**").permitAll()

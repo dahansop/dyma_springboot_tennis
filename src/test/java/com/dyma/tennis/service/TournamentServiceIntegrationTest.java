@@ -25,13 +25,13 @@ public class TournamentServiceIntegrationTest {
 
   @Autowired
   private TournamentService tournamentService;
-  
+
   @BeforeEach
   void clearDatabase(@Autowired Flyway flyway) {
     flyway.clean();
     flyway.migrate();
   }
-  
+
   @Test
   public void shouldCreateTournament() {
     // Given
@@ -43,19 +43,19 @@ public class TournamentServiceIntegrationTest {
         endDate,
         500000,
         64);
-    
+
     // When
     Tournament savedTournament = tournamentService.create(tournamentToCreate);
-    Tournament createdTournament = tournamentService.getByIdentifier(savedTournament.identifier());
-    
+    Tournament createdTournament = tournamentService.getByIdentifier(savedTournament.info().identifier());
+
     // Then
-    Assertions.assertThat(createdTournament.name()).isEqualTo("Madrid Master 1000");
-    Assertions.assertThat(createdTournament.startDate()).isEqualTo(startDate);
-    Assertions.assertThat(createdTournament.endDate()).isEqualTo(endDate);
-    Assertions.assertThat(createdTournament.prizeMoney()).isEqualTo(500000);
-    Assertions.assertThat(createdTournament.capacity()).isEqualTo(64);
+    Assertions.assertThat(createdTournament.info().name()).isEqualTo("Madrid Master 1000");
+    Assertions.assertThat(createdTournament.info().startDate()).isEqualTo(startDate);
+    Assertions.assertThat(createdTournament.info().endDate()).isEqualTo(endDate);
+    Assertions.assertThat(createdTournament.info().prizeMoney()).isEqualTo(500000);
+    Assertions.assertThat(createdTournament.info().capacity()).isEqualTo(64);
   }
-  
+
   @Test
   public void shouldFailToCreateanExistingTournament() {
     // Given
@@ -67,7 +67,7 @@ public class TournamentServiceIntegrationTest {
         64
     );
     tournamentService.create(tournamentToCreate);
-    
+
     TournamentToCreate duplicatedTournamentToCreate = new TournamentToCreate(
         "Madrid Master 1000",
         LocalDate.now().plusDays(10),
@@ -75,14 +75,14 @@ public class TournamentServiceIntegrationTest {
         500000,
         64
 );
-    
+
     // When / then
     Exception exception = assertThrows(TournamentAlreadyExistsException.class, () -> {
       tournamentService.create(duplicatedTournamentToCreate);
     });
     Assertions.assertThat(exception.getMessage()).contains("Tournament with name Madrid Master 1000 already exists.");
   }
-  
+
   @Test
   public void shouldUpdateTournament() {
     // Given
@@ -96,39 +96,39 @@ public class TournamentServiceIntegrationTest {
         endDate,
         2500000,
         128);
-    
+
     // when
     tournamentService.update(tournamentToUpdate);
     Tournament updatedTournament = tournamentService.getByIdentifier(frenchOpenIdentifier);
-    
+
     // Then
-    Assertions.assertThat(updatedTournament.name()).isEqualTo("Roland Garros");
-    Assertions.assertThat(updatedTournament.startDate()).isEqualTo(startDate);
-    Assertions.assertThat(updatedTournament.endDate()).isEqualTo(endDate);
-    Assertions.assertThat(updatedTournament.prizeMoney()).isEqualTo(2500000);
-    Assertions.assertThat(updatedTournament.capacity()).isEqualTo(128);
+    Assertions.assertThat(updatedTournament.info().name()).isEqualTo("Roland Garros");
+    Assertions.assertThat(updatedTournament.info().startDate()).isEqualTo(startDate);
+    Assertions.assertThat(updatedTournament.info().endDate()).isEqualTo(endDate);
+    Assertions.assertThat(updatedTournament.info().prizeMoney()).isEqualTo(2500000);
+    Assertions.assertThat(updatedTournament.info().capacity()).isEqualTo(128);
   }
-  
+
   @Test
   public void shouldDeleteTournament() {
     // given
     UUID tournamentToDelete = UUID.fromString("124edf07-64fa-4ea4-a65e-3bfe96df5781");
-    
+
     // when
     tournamentService.delete(tournamentToDelete);
-    
+
     // Then
     List<Tournament> alltournaments = tournamentService.getAllTournaments();
     Assertions.assertThat(alltournaments)
-      .extracting("name")
+      .extracting("info.name")
       .containsExactly("Australian Open", "French Open", "Wimbledon");
   }
-  
+
   @Test
   public void shouldFailDelete_whenTournamentDoesNotExist() {
     // Given
     UUID tournamentToDelete = UUID.fromString("5f8c9b43-8d74-49e8-b821-f43d57e4a9b7");
-    
+
     // When / then
     Exception exception = assertThrows(TournamentNotFoundException.class, () -> {
       tournamentService.delete(tournamentToDelete);
