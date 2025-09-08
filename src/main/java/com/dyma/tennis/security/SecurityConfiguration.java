@@ -32,7 +32,7 @@ public class SecurityConfiguration {
           authorizations
             .requestMatchers("/swagger-ui/**").permitAll()
             .requestMatchers("/v3/api-docs/**").permitAll()
-            .requestMatchers("/accounts/token").permitAll()
+            .requestMatchers("/accounts/login").permitAll()
             .requestMatchers("/healthcheck/**").permitAll()
             .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
             .requestMatchers(HttpMethod.GET, "/players/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
