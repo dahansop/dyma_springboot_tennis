@@ -96,4 +96,9 @@ Pour y avoir accès, il faut se connecter en tant qu'administrateur en utilisant
 * DEV : admin/admin
 * PROD : admin/admin-prod
 
+## Keycloak
+
+* URL : <http://localhost:8090>
+* login : admin
+* password : admin
 

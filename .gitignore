@@ -33,3 +33,5 @@ replay_pid*
 src/main/docker/postgres-data-dev
 src/main/docker/postgres-data-prod
 src/main/docker/pgadmin-data
+src/main/docker/keycloak-data
+

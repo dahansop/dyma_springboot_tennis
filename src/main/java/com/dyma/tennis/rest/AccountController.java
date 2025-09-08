@@ -1,29 +1,29 @@
 package com.dyma.tennis.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.dyma.tennis.model.UserAuthentication;
 import com.dyma.tennis.model.UserCredentials;
-import com.dyma.tennis.security.JWTService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 /**
@@ -33,29 +33,43 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
-
-  @Autowired
-  private AuthenticationManager authenticationManager;
   
-  @Autowired
-  private JWTService jwtService;
+  @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+  private String tokenIssuerUrl;
 
-  @Operation(summary = "Connexion utilisateur", description = "Connexion utilisateur")
+  @Value("${jwt.auth.client-id}")
+  private String clientId;
+
+  @Operation(summary = "Gets an access token", description = "Gets an access token")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Utilisateur connecté",
-          content = {@Content(mediaType = "application/json",
-          array = @ArraySchema(schema = @Schema(implementation = UserAuthentication.class))) }),
-      @ApiResponse(responseCode = "403", description = "Session invalide"),
-      @ApiResponse(responseCode = "400", description = "le login et le mot de passe sont obligatoires")
+          @ApiResponse(responseCode = "200", description = "Access token was provided.",
+                  content = {@Content(mediaType = "application/json",
+                          schema = @Schema(implementation = UserAuthentication.class))}),
+          @ApiResponse(responseCode = "400", description = "Login or password is not provided."),
+          @ApiResponse(responseCode = "500", description = "An error occurred while asking for an access token.")
   })
-  @PostMapping("/login")
-  public ResponseEntity<UserAuthentication> login(@RequestBody @Valid UserCredentials credentials, HttpServletRequest request, HttpServletResponse response) {
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(credentials.login(), credentials.password());
-    Authentication authentication = authenticationManager.authenticate(authenticationToken);
-    
-    String jwt = jwtService.createToken(authentication);
-    return new ResponseEntity<UserAuthentication>(
-        new UserAuthentication(authentication.getName(), jwt),
-        HttpStatus.OK);
+  @PostMapping("/token")
+  public ResponseEntity<UserAuthentication> getAccessToken(@RequestBody @Valid UserCredentials credentials) {
+      String url = tokenIssuerUrl + "/protocol/openid-connect/token";
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+      String requestBody = Map.of(
+                      "username", credentials.login(),
+                      "password", credentials.password(),
+                      "grant_type", "password",
+                      "client_id", clientId
+              ).entrySet().stream()
+              .map(entry -> entry.getKey() + "=" + entry.getValue())
+              .collect(Collectors.joining("&"));
+
+      HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+      RestTemplate restTemplate = new RestTemplate();
+      ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
+      String accessToken = (String) Objects.requireNonNull(response.getBody()).get("access_token");
+
+      return ResponseEntity.ok(new UserAuthentication(credentials.login(), accessToken));
   }
 }
